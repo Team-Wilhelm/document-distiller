@@ -60,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "DocumentDistiller:build:production"
+              "buildTarget": "DocumentDistiller:build:production"
             },
             "development": {
-              "browserTarget": "DocumentDistiller:build:development"
+              "buildTarget": "DocumentDistiller:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -71,7 +71,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "DocumentDistiller:build"
+            "buildTarget": "DocumentDistiller:build"
           }
         },
         "test": {
