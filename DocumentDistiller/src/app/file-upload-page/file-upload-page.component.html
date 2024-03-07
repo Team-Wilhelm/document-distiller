@@ -4,6 +4,6 @@
     <p>File upload dialog is a component that allows users to upload files to the server.</p>
     <button (click)="fileUploadDialogHidden = !fileUploadDialogHidden">Show dialog</button>
   } @else {
-    <app-file-upload-dialog></app-file-upload-dialog>
+    <app-file-upload-dialog (closeDialogEmitter)="fileUploadDialogHidden = true"></app-file-upload-dialog>
   }
 </section>

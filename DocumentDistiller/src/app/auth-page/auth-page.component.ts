@@ -21,7 +21,7 @@ export class AuthPageComponent {
   }
 
   login() {
-    this.router.navigate(['/file-upload']);
+    this.router.navigate(['/dashboard']);
 
     if (this.loginForm.invalid) {
       return;

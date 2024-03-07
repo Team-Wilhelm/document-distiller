@@ -19,7 +19,7 @@ import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModul
     }
   ],
   template: `
-    <app-dialog [title]="''" [minWidth]="'75vw'">
+    <app-dialog [title]="''" [minWidth]="'75vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
       <section class="flex flex-col gap-3">
         <!-- File upload -->
         <h4 class="text-2xl">Upload and attach files</h4>
