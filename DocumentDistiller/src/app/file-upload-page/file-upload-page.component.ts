@@ -12,5 +12,4 @@ export class FileUploadPageComponent {
   handleFileInput(files: FileList) {
     this.fileToUpload = files.item(0);
   }
-
 }

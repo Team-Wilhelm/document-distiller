@@ -1,15 +1,18 @@
-import {Component} from "@angular/core";
+import {Component, EventEmitter, Output} from "@angular/core";
 import {DialogComponent} from "../../dialog/dialog.component";
+import {FileRowComponent} from "../file-row/file-row.component";
 
 @Component({
   selector: 'app-file-upload-dialog',
   standalone: true,
   imports: [
-    DialogComponent
+    DialogComponent,
+    FileRowComponent
   ],
   template: `
     <app-dialog [title]="'Upload File'" [minWidth]="'75vw'">
       <section class="flex flex-col gap-3">
+        <!-- File upload -->
         <h4 class="text-2xl">Upload and attach files</h4>
         <p class="text-xl text-gray-500">Upload and attach files to this project.</p>
         <label class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer">
@@ -25,35 +28,14 @@ import {DialogComponent} from "../../dialog/dialog.component";
             </div>
           </div>
         </label>
-        <div class="flex p-3 rounded-lg border-solid border-black border-[1px]">
-          <i></i>
-          <div class="flex flex-col p-3">
-            <p>this-is-the-first-file.pdf</p>
-            <p>1.2MB</p>
-            <p></p>
-          </div>
-        </div>
 
-        <div class="flex p-3 rounded-lg border-solid bborder-gray-300 border-[1px]">
-          <i></i>
-          <div class="flex flex-col p-3">
-            <p>this-is-the-second-file.pdf</p>
-            <p>1.2MB</p>
-            <p></p>
-          </div>
-        </div>
+        <!-- File list -->
+        <app-file-row>
+        </app-file-row>
 
-        <div class="flex p-3 rounded-lg border-solid border-gray-300 border-[1px]">
-          <i></i>
-          <div class="flex flex-col p-3">
-            <p>this-is-the-third-file.pdf</p>
-            <p>1.2MB</p>
-            <p></p>
-          </div>
-        </div>
-
-        <div class="flex justify-end">
-          <button class="p-3 bg-blue-500 text-white rounded-lg">Upload</button>
+        <div class="flex gap-2">
+          <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]" (click)="closeDialogEmitter.emit()">Cancel</button>
+          <button class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px]">Upload</button>
         </div>
       </section>
     </app-dialog>
@@ -61,6 +43,8 @@ import {DialogComponent} from "../../dialog/dialog.component";
 })
 
 export class FileUploadDialogComponent {
+  @Output() closeDialogEmitter = new EventEmitter<boolean>();
+
   constructor() {
   }
 }
