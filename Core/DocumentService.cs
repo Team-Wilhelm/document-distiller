@@ -22,6 +22,7 @@ public class DocumentService(TextAnalyticsClient client)
         };
         
         // Start analysis process.
+        // TODO: consider if it should take the file as input instead of the string
         var operation = await client.StartAnalyzeActionsAsync(batchInput, actions);
         await operation.WaitForCompletionAsync();
         
