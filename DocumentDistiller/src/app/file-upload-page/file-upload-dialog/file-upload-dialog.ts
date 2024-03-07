@@ -1,16 +1,25 @@
-import {Component, EventEmitter, Output} from "@angular/core";
+import {Component, ElementRef, EventEmitter, HostListener, Output} from "@angular/core";
 import {DialogComponent} from "../../dialog/dialog.component";
 import {FileRowComponent} from "../file-row/file-row.component";
+import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-file-upload-dialog',
   standalone: true,
   imports: [
     DialogComponent,
-    FileRowComponent
+    FileRowComponent,
+    ReactiveFormsModule
+  ],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: FileUploadDialogComponent,
+      multi: true
+    }
   ],
   template: `
-    <app-dialog [title]="'Upload File'" [minWidth]="'75vw'">
+    <app-dialog [title]="''" [minWidth]="'75vw'">
       <section class="flex flex-col gap-3">
         <!-- File upload -->
         <h4 class="text-2xl">Upload and attach files</h4>
@@ -30,21 +39,65 @@ import {FileRowComponent} from "../file-row/file-row.component";
         </label>
 
         <!-- File list -->
-        <app-file-row>
-        </app-file-row>
+        @if (file) {
+          <app-file-row [file]="file"
+                        (deleteFileEmitter)="handleFileDeleted()">
+          </app-file-row>
+        }
 
         <div class="flex gap-2">
-          <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]" (click)="closeDialogEmitter.emit()">Cancel</button>
-          <button class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px]">Upload</button>
+          <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
+                  (click)="closeDialogEmitter.emit()">Cancel
+          </button>
+          <button
+            class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px] disabled:opacity-60 disabled:cursor-not-allowed"
+            (click)="uploadFile()" [disabled]="!file">Upload
+          </button>
         </div>
       </section>
     </app-dialog>
   `,
 })
 
-export class FileUploadDialogComponent {
+export class FileUploadDialogComponent implements ControlValueAccessor {
   @Output() closeDialogEmitter = new EventEmitter<boolean>();
+  @Output() fileUploadedEmitter = new EventEmitter<File>();
 
-  constructor() {
+  onChange: Function = () => {};
+  file: File | null = null;
+
+  constructor(private host: ElementRef<HTMLInputElement>) {
+  }
+
+  @HostListener('change', ['$event.target.files']) emitFiles(event: FileList) {
+    const file = event && event.item(0);
+    this.onChange(file);
+    this.file = file;
+  }
+
+  writeValue(value: null) {
+    // clear file input
+    this.host.nativeElement.value = '';
+    this.file = null;
+  }
+
+  registerOnChange(fn: Function) {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: Function) {
+  }
+
+  uploadFile() {
+    if (!this.file) {
+      return;
+    }
+
+    console.log('uploading file');
+    this.fileUploadedEmitter.emit(this.file);
+  }
+
+  handleFileDeleted() {
+    this.file = null;
   }
 }

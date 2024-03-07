@@ -3,7 +3,7 @@
     class="bg-surface-mixed-500 flex flex-col justify-between gap-4 px-5 py-3 rounded-xl shadow-xl bg-white absolute top-1/4 -translate-y-1/4"
     [ngStyle]="{minWidth: minWidth}">
     <div class="flex justify-between items-start">
-      <h3 class="text-xl">{{ 'Dialog' }}</h3>
+      <h3 class="text-xl">{{ title }}</h3>
       <button (click)="closeDialogEmitter.emit(true)">
         <svg class="feather feather-x-square" fill="none" height="24" stroke="currentColor"
              stroke-linecap="round"
