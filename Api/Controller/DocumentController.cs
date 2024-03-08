@@ -1,6 +1,7 @@
 using System.Text;
 using Core;
-using Microsoft.AspNetCore.Http.HttpResults;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VirtualFriend.Controller;
@@ -8,52 +9,54 @@ namespace VirtualFriend.Controller;
 public class DocumentController(DocumentService documentService) : ControllerBase
 {
     [HttpPost("summarise")]
-    public async Task<IActionResult> SummariseDocument(IFormFile? file)
+    public async Task<IActionResult> SummariseDocument(IFormFile file)
     {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is null or empty");
-        }
+        var text = ConvertPdfToString(file);
+        var summarisedText = await documentService.SummariseContent(text);
         
-        //TODO: find a way to convert file to string properly, does this even work? Also move this to the service probably
-        var fileString = ConvertFileToString(file);
-        var summarisedDocument = await documentService.SummariseContent(fileString);
-        
-        //TODO: decide on the return type
-        return Ok(summarisedDocument);
-        
-        //Console.WriteLine($"Received file: {file.FileName}");
+        return Ok(summarisedText);
     }
-
-    [HttpPost("keypoints")]
-    public async Task<IActionResult> ExtractKeyPoints(IFormFile? file)
+    
+    [HttpPost("keysentences")]
+    public async Task<IActionResult> ExtractKeySentences(IFormFile file)
     {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is null or empty");
-        }
-        var fileString = ConvertFileToString(file);
-        var keyPoints = await documentService.ExtractKeyPoints(fileString);
+        var text = ConvertPdfToString(file);
+        var keySentences = await documentService.ExtractKeySentences(text);
+        
+        return Ok(keySentences);
+    }
+    
+    [HttpPost("keypoints")]
+    public async Task<IActionResult> ExtractKeyPoints(IFormFile file)
+    {
+        var text = ConvertPdfToString(file);
+        var keyPoints = await documentService.ExtractKeyPoints(text);
         
         return Ok(keyPoints);
     }
+    
 
     [HttpPost("translate")]
-    public async Task<IActionResult> TranslateDocument([FromBody] string message)
+    public async Task<IActionResult> TranslateDocument(IFormFile file)
     {
-        //return documentService.ExtractKeyPoints(message);
-        throw new NotImplementedException();
+        var text = ConvertPdfToString(file);
+        var translatedText = await documentService.TranslateContent(text);
+        
+        return Ok(translatedText);
     }
     
-    //TODO: move this to utils if it will be used fr fr
-    public string ConvertFileToString(IFormFile file)
+    private string ConvertPdfToString(IFormFile file)
     {
-        var fileString = new StringBuilder();
-        using (var reader = new StreamReader(file.OpenReadStream()))
+        var reader = new PdfReader(file.OpenReadStream());
+        var pdfDocument = new PdfDocument(reader);
+        var stringBuilder = new StringBuilder();
+        for (int page = 1; page <= pdfDocument.GetNumberOfPages(); page++)
         {
-            while (reader.Peek() >= 0)
-                fileString.AppendLine(reader.ReadLine()); 
+            var text = PdfTextExtractor.GetTextFromPage(pdfDocument.GetPage(page));
+            stringBuilder.Append(text);
         }
-        return fileString.ToString();
+        reader.Close();
+        pdfDocument.Close();
+        return stringBuilder.ToString();
     }
 }

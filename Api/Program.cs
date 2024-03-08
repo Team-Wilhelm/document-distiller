@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<TextAnalyticsClient>(provider => {
     var credentials = new AzureKeyCredential(Environment.GetEnvironmentVariable("LANGUAGE_KEY"));
-    var endpoint = new Uri(Environment.GetEnvironmentVariable("LANGUAGE_ENDPOINT")); //TODO: Add endpoint for azure language endpoint
+    var endpoint = new Uri(Environment.GetEnvironmentVariable("LANGUAGE_ENDPOINT"));
     return new TextAnalyticsClient(endpoint, credentials);
 });
 
