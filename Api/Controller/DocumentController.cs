@@ -1,4 +1,5 @@
 using Core;
+using Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VirtualFriend.Controller;
