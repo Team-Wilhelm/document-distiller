@@ -19,7 +19,9 @@ public static class IdentityBuilder
                 options.Password.RequiredUniqueChars = 1;
                 options.User.RequireUniqueEmail = true;
             })
-            .AddEntityFrameworkStores<AppDbContext>();
+            .AddRoles<AppRole>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
         return services;
     }

@@ -11,8 +11,8 @@ public class AuthService(UserRepository userRepository)
         await userRepository.CreateUser(registerDto);
     }
     
-    public async Task Login(LoginDto loginDto)
+    public async Task<AppUser> Login(LoginDto loginDto)
     {
-        await userRepository.Login(loginDto);
+       return await userRepository.Login(loginDto);
     }
 }

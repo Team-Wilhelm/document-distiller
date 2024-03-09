@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Dtos;
 using Shared.Exceptions;
 using Shared.Models;
+using Shared.Responses;
 
 namespace Infrastructure;
 
@@ -31,10 +32,8 @@ public class UserRepository(UserManager<AppUser> userManager)
         }
         return user;
     }
-    
-    public async Task GetAllUsers() {}
 
-    public async Task Login(LoginDto loginDto)
+    public async Task<AppUser> Login(LoginDto loginDto)
     {
         var user = await userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginDto.Email);
         if (user == null)
@@ -47,5 +46,7 @@ public class UserRepository(UserManager<AppUser> userManager)
         {
             throw new AuthException("Wrong username or password");
         }
+        
+        return user;
     }
 }

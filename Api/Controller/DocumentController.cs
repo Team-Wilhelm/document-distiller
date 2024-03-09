@@ -1,12 +1,15 @@
 using System.Text;
-using Core;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VirtualFriend.Controller;
 
+[ApiController]
+[Route("[controller]")]
+[Authorize]
 public class DocumentController(DocumentService documentService) : ControllerBase
 {
     [HttpPost("summarise")]
