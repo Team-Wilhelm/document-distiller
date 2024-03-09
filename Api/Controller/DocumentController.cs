@@ -4,6 +4,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models;
 
 namespace VirtualFriend.Controller;
 
@@ -13,6 +14,7 @@ namespace VirtualFriend.Controller;
 public class DocumentController(DocumentService documentService) : ControllerBase
 {
     [HttpPost("summarise")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentSummary))]
     public async Task<IActionResult> SummariseDocument(IFormFile file)
     {
         var text = ConvertPdfToString(file);
@@ -22,6 +24,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     }
     
     [HttpPost("keysentences")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentKeySentences))]
     public async Task<IActionResult> ExtractKeySentences(IFormFile file)
     {
         var text = ConvertPdfToString(file);
