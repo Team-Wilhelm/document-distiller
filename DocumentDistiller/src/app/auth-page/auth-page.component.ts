@@ -15,6 +15,10 @@ export class AuthPageComponent {
   });
 
   constructor(private router: Router, private tokenService: TokenService) {
+    this.loginForm = new FormGroup({
+      email: new FormControl('user@app.com', [Validators.required, Validators.email]),
+      password: new FormControl('P@ssw0rd.+', [Validators.required]),
+    });
   }
 
   async login() {
