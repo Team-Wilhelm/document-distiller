@@ -22,6 +22,14 @@ builder.Services.AddControllers();
 builder.Services.SetupIdentity();
 builder.Services.AddAuthorization();
 
+if (args.Contains("--db-init"))
+{
+    var scope = builder.Services.BuildServiceProvider().CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+    db.Database.Migrate();
+}
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
