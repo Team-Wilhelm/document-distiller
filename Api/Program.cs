@@ -1,5 +1,7 @@
 using Core.Services;
 using Infrastructure;
+using Azure;
+using Azure.AI.TextAnalytics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using VirtualFriend.Extensions;
@@ -17,6 +19,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DocumentService>();
+builder.Services.AddSingleton<TextAnalyticsClient>(provider => {
+    var credentials = new AzureKeyCredential(Environment.GetEnvironmentVariable("LANGUAGE_KEY"));
+    var endpoint = new Uri(Environment.GetEnvironmentVariable("LANGUAGE_ENDPOINT"));
+    return new TextAnalyticsClient(endpoint, credentials);
+});
 builder.Services.AddControllers();
 
 builder.Services.SetupIdentity();
