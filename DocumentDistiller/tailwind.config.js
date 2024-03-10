@@ -25,8 +25,8 @@ module.exports = {
       'primary': '#7B7F77',
       'primary-light': '#9B9C92',
       'text': '#1E1E1E',
-      'text-light': '#7B7F77',
-
+      'text-light': '#FFFFFF',
+      'button': '#020D13',
     }
   },
   plugins: [

@@ -7,6 +7,7 @@ import {MyProjectsComponent} from "./my-projects/my-projects.component";
 import {ProjectCardComponent} from "./project-card/project-card.component";
 import {NoteCardComponent} from "./note-card/note-card.component";
 import {FileUploadModule} from "../file-upload-page/file-upload.module";
+import {MenuItemComponent} from "./menu-item/menu-item.component";
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import {FileUploadModule} from "../file-upload-page/file-upload.module";
     MyProjectsComponent,
     ProjectCardComponent,
     NoteCardComponent,
+    MenuItemComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +24,8 @@ import {FileUploadModule} from "../file-upload-page/file-upload.module";
     FileUploadModule
   ],
   exports: [
-    DashboardComponent
+    DashboardComponent,
+    MenuItemComponent
   ]
 })
 export class DashboardModule { }
