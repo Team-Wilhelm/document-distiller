@@ -1,16 +1,15 @@
-import {Component, ElementRef, EventEmitter, HostListener, Output} from "@angular/core";
-import {DialogComponent} from "../../dialog/dialog.component";
-import {FileRowComponent} from "../file-row/file-row.component";
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from "@angular/forms";
+import {Component, ElementRef, EventEmitter, HostListener, Input, Output} from "@angular/core";
+import {ControlValueAccessor} from "@angular/forms";
+import {ActionType} from "../../dashboard/constants/FrontendConstants";
 
 @Component({
   selector: 'app-file-upload-dialog',
   template: `
-    <app-dialog [title]="''" [minWidth]="'75vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
+    <app-dialog [title]="''" [minWidth]="'50vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
       <section class="flex flex-col gap-3">
         <!-- File upload -->
         <h4 class="text-2xl">Upload and attach files</h4>
-        <p class="text-xl text-gray-500">Upload and attach files to this project.</p>
+        <p class="text-xl text-gray-500">Upload and attach files to {{ actionType?.toLowerCase() }}</p>
         <label class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer">
           <input type="file" class="w-full opacity-0 cursor-pointer"/>
           <div class="flex flex-col justify-center items-center">
@@ -47,6 +46,7 @@ import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModul
 })
 
 export class FileUploadDialogComponent implements ControlValueAccessor {
+  @Input() actionType: ActionType | undefined;
   @Output() closeDialogEmitter = new EventEmitter<boolean>();
   @Output() fileUploadedEmitter = new EventEmitter<File>();
 

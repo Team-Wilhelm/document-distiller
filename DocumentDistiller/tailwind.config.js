@@ -9,10 +9,13 @@ module.exports = {
         sans: ['Lato', 'sans-serif'],
       },
       gridTemplateColumns: {
-        'dashboard': 'auto 2fr 1fr',
+        'dashboard': '4fr 1fr',
       },
       gridTemplateRows: {
         'dashboard': 'auto 1fr 2fr',
+      },
+      width: {
+        'screen-no-sidebar': 'calc(100vw - 192px)',
       }
     },
     colors : {
