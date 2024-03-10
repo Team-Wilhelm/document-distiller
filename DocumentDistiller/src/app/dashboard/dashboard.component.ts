@@ -7,14 +7,6 @@ import {TopBarComponent} from "../top-bar/top-bar.component";
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
-  imports: [
-    ProjectCardComponent,
-    NoteCardComponent,
-    MyProjectsComponent,
-    AddMoreNotesComponent,
-    TopBarComponent
-  ],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {

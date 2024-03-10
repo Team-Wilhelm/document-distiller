@@ -1,12 +1,15 @@
 using System.Text;
 using Azure;
 using Azure.AI.TextAnalytics;
+using Core.Context;
+using Infrastructure;
+using Shared.Models;
 
-namespace Core;
+namespace Core.Services;
 
-public class DocumentService(TextAnalyticsClient client)
+public class DocumentService(TextAnalyticsClient client, DocumentRepository documentRepository, CurrentContext currentContext)
 {
-    public async Task<string?> ExtractKeySentences(string text)
+    public async Task<DocumentKeySentences> ExtractKeySentences(string text)
     {
         var summaryResult = new StringBuilder();
         var batchInput = new List<string>
@@ -52,10 +55,10 @@ public class DocumentService(TextAnalyticsClient client)
                 }
             }
         }
-        return summaryResult.ToString();
+        return await documentRepository.SaveDocumentKeySentences(currentContext.UserId!.Value, summaryResult.ToString());
     }
     
-    public async Task<string?> SummariseContent(string text)
+    public async Task<DocumentSummary> SummariseContent(string text)
     {
         var summaryResult = new StringBuilder();
         var batchInput = new List<string>
@@ -102,7 +105,7 @@ public class DocumentService(TextAnalyticsClient client)
                 }
             }
         }
-        return summaryResult.ToString();
+        return await documentRepository.SaveDocumentSummary(currentContext.UserId!.Value, summaryResult.ToString());
     }
 
     public async Task<string> ExtractKeyPoints(string text)

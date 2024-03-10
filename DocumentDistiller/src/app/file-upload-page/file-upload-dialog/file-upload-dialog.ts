@@ -5,19 +5,6 @@ import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModul
 
 @Component({
   selector: 'app-file-upload-dialog',
-  standalone: true,
-  imports: [
-    DialogComponent,
-    FileRowComponent,
-    ReactiveFormsModule
-  ],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: FileUploadDialogComponent,
-      multi: true
-    }
-  ],
   template: `
     <app-dialog [title]="''" [minWidth]="'75vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
       <section class="flex flex-col gap-3">

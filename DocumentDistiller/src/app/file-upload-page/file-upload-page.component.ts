@@ -5,7 +5,6 @@ import { Component } from '@angular/core';
   templateUrl: './file-upload-page.component.html',
 })
 export class FileUploadPageComponent {
-  title = 'DocumentDistiller';
   fileToUpload: File | null = null;
   fileUploadDialogHidden = false;
 

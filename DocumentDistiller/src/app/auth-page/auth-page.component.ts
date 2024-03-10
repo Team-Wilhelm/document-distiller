@@ -1,33 +1,34 @@
 import {Component} from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {TokenService} from "../services/token.service";
+import {LoginDto} from "../models/login-dto.interface";
 
 @Component({
   selector: 'app-auth-page',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule
-  ],
   templateUrl: './auth-page.component.html',
 })
 export class AuthPageComponent {
-  title = 'DocumentDistiller';
   loginForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
   });
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private tokenService: TokenService) {
+    this.loginForm = new FormGroup({
+      email: new FormControl('user@app.com', [Validators.required, Validators.email]),
+      password: new FormControl('P@ssw0rd.+', [Validators.required]),
+    });
   }
 
-  login() {
-    this.router.navigate(['/dashboard']);
-
+  async login() {
     if (this.loginForm.invalid) {
       return;
     }
 
-    console.log('login');
+    const loginDto = this.loginForm.value as LoginDto;
+    await this.tokenService.login(loginDto);
+    await this.router.navigate(['/dashboard']);
   }
 
   register() {

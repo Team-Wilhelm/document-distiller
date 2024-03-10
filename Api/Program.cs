@@ -1,37 +1,166 @@
+using System.Reflection;
+using System.Text;
+using Core.Services;
+using Infrastructure;
 using Azure;
 using Azure.AI.TextAnalytics;
-using Core;
+using Core.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Shared.Dtos;
+using Shared.Models;
+using VirtualFriend.Configuration;
+using VirtualFriend.Extensions;
+using VirtualFriend.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<DocumentService>();
-builder.Services.AddControllers();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+var connectionString = builder.Configuration.GetConnectionString("DbConnection"); // for GitHub Actions workflow
 
-builder.Services.AddSingleton<TextAnalyticsClient>(provider => {
-    var credentials = new AzureKeyCredential(Environment.GetEnvironmentVariable("LANGUAGE_KEY"));
-    var endpoint = new Uri(Environment.GetEnvironmentVariable("LANGUAGE_ENDPOINT"));
-    return new TextAnalyticsClient(endpoint, credentials);
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    connectionString ??= Environment.GetEnvironmentVariable("DbConnection");
+    options.UseNpgsql(connectionString);
 });
 
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<DocumentRepository>();
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<DocumentService>();
+builder.Services.AddSingleton<TextAnalyticsClient>(provider =>
+{
+    var languageKey = Environment.GetEnvironmentVariable("LANGUAGE_KEY") ??
+                      builder.Configuration.GetSection("AzureAIServices")["LANGUAGE_KEY"]!;
+    var languageEndpoint = Environment.GetEnvironmentVariable("LANGUAGE_ENDPOINT") ??
+                           builder.Configuration.GetSection("AzureAIServices")["LANGUAGE_ENDPOINT"]!;
+    var credentials = new AzureKeyCredential(languageKey);
+    var endpoint = new Uri(languageEndpoint);
+    return new TextAnalyticsClient(endpoint, credentials);
+});
+builder.Services.AddScoped<CurrentContext>();
+builder.Services.AddControllers();
+
+builder.Services.SetupIdentity();
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(options =>
+    {
+        var jwtConfig = builder.Configuration.GetSection("Jwt");
+        var key = Encoding.UTF8.GetBytes(jwtConfig.GetValue<string>("Key")
+                                         ?? throw new NullReferenceException("JWT key cannot be null"));
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtConfig.GetValue<string>("Issuer"),
+            ValidAudience = jwtConfig.GetValue<string>("Audience"),
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1",
+        new OpenApiInfo
+        {
+            Title = "Document Distiller",
+            Version = "v1"
+        });
+    // using System.Reflection;
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"JWT Authorization header using the Bearer scheme. <br/>
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      <br/> Example: 'Bearer 12345abcdef'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+
+            },
+            new List<string>()
+        }
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "Development", policyBuilder =>
+    {
+        policyBuilder.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .SetIsOriginAllowed(_ => true);
+    });
+});
 
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = FormOptions.DefaultMultipartBodyLengthLimit;
 });
 
-
 var app = builder.Build();
+
+if (args.Contains("--db-init"))
+{
+    var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+    db.Database.Migrate();
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    var defaultUser = new RegisterDto
+    {
+        Email = "user@app.com",
+        Password = "P@ssw0rd.+"
+    };
+    await userManager.CreateAsync(new AppUser { Email = defaultUser.Email, UserName = defaultUser.Email },
+        defaultUser.Password);
+}
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("Development");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
+
+app.UseMiddleware<CurrentContextMiddleware>();
 
 app.Run();

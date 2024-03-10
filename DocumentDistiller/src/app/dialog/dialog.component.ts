@@ -3,10 +3,6 @@ import {NgStyle} from "@angular/common";
 
 @Component({
   selector: 'app-dialog',
-  standalone: true,
-  imports: [
-    NgStyle
-  ],
   templateUrl: './dialog.component.html',
 })
 export class DialogComponent {
