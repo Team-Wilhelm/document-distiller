@@ -5,6 +5,5 @@ import { Component } from '@angular/core';
   templateUrl: './add-more-notes.component.html',
 })
 export class AddMoreNotesComponent {
-  addMoreSize = 120;
-
+  addMoreSize = 100;
 }

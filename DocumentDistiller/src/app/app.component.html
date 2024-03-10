@@ -1,5 +1,11 @@
-<main class="h-screen w-screen flex flex-col items-center p-5">
-  <app-top-bar class="w-full"></app-top-bar>
-  <router-outlet></router-outlet>
+<main class="h-screen w-screen flex">
+  <nav class="fixed h-screen z-50 w-48 flex flex-col bg-background-sidebar">
+    <h2>Sidebar</h2>
+  </nav>
+
+  <div class="flex-col items-center ml-48 py-5 bg-background-sidebar">
+    <app-top-bar class="w-full"></app-top-bar>
+    <router-outlet></router-outlet>
+  </div>
 </main>
 
