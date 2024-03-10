@@ -1,12 +1,13 @@
 import {Injectable} from "@angular/core";
 import {BehaviorSubject} from "rxjs";
+import DocumentResult from "../models/document-result";
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileStore {
   fileToUpload: BehaviorSubject<File | null> = new BehaviorSubject<File | null>(null);
-  result: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  result: BehaviorSubject<DocumentResult | null> = new BehaviorSubject<DocumentResult | null>(null);
   isWaitingForResponse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor() {}
@@ -23,7 +24,7 @@ export class FileStore {
     return this.fileToUpload.value;
   }
 
-  setResult(result: string) {
+  setResult(result: DocumentResult) {
     this.result.next(result);
   }
 

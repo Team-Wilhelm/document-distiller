@@ -11,8 +11,8 @@ import {Subscription} from "rxjs";
       <section class="flex flex-col gap-3">
         @if (isWaitingForResponse) {
           <p>I am loading jesus christ give me some time</p>
-        } @else if (fileStore.getResultValue() !== '') {
-          <p>Result: {{ fileStore.getResultValue() }}</p>
+        } @else if (fileStore.getResultValue()) {
+          <p>Result: {{ fileStore.getResultValue() | json }}</p>
         } @else {
           <!-- File upload -->
           <h4 class="text-2xl">Upload and attach files</h4>

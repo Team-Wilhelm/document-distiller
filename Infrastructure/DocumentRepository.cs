@@ -13,7 +13,7 @@ public class DocumentRepository(AppDbContext dbContext)
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
             FileName = "summary.txt",
-            Summary = summary
+            Result = summary
         };
         
         dbContext.DocumentSummaries.Add(document);
@@ -30,7 +30,7 @@ public class DocumentRepository(AppDbContext dbContext)
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
             FileName = "key-sentences.txt",
-            KeySentences = keySentences.Split('\n')
+            Result = keySentences
         };
         
         dbContext.DocumentKeySentences.Add(document);

@@ -7,7 +7,7 @@ import {FileService} from "../services/file.service";
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
-  fileUploadDialogHidden = false; // TODO: set to true
+  fileUploadDialogHidden = true;
   fileUploadDialogActionType: ActionType | undefined;
 
   constructor(private fileService: FileService) {}
