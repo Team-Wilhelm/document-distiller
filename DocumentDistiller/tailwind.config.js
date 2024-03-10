@@ -12,7 +12,7 @@ module.exports = {
         'dashboard': '4fr 1fr',
       },
       gridTemplateRows: {
-        'dashboard': 'auto 1fr 2fr',
+        'dashboard': 'auto 1fr 1fr',
       },
       width: {
         'screen-no-sidebar': 'calc(100vw - 192px)',

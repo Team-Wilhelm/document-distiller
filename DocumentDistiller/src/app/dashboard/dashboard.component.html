@@ -11,7 +11,8 @@
 
     <!-- Add more notes -->
     <app-add-more-notes class="col-span-1"
-                        (fileUploadDialogOpenedEmitter)="handleFileUploadDialogOpen($event)"></app-add-more-notes>
+      (fileUploadDialogOpenedEmitter)="handleFileUploadDialogOpen($event)">
+    </app-add-more-notes>
 
     <!--Latest notes -->
     <section class="flex flex-col col-span-2">
@@ -34,7 +35,8 @@
 } @else {
   <app-file-upload-dialog
     [actionType]="fileUploadDialogActionType"
-    (closeDialogEmitter)="fileUploadDialogHidden = true">
+    (closeDialogEmitter)="fileUploadDialogHidden = true"
+    (fileUploadedEmitter)="uploadFileToServer($event)">
   </app-file-upload-dialog>
 }
 
