@@ -1,6 +1,7 @@
 import {Component, ElementRef, EventEmitter, HostListener, Input, Output} from "@angular/core";
 import {ControlValueAccessor} from "@angular/forms";
 import {ActionType} from "../../dashboard/constants/FrontendConstants";
+import {FileStore} from "../../stores/file.store";
 
 @Component({
   selector: 'app-file-upload-dialog',
@@ -48,12 +49,12 @@ import {ActionType} from "../../dashboard/constants/FrontendConstants";
 export class FileUploadDialogComponent implements ControlValueAccessor {
   @Input() actionType: ActionType | undefined;
   @Output() closeDialogEmitter = new EventEmitter<boolean>();
-  @Output() fileUploadedEmitter = new EventEmitter<File>();
+  @Output() fileUploadedEmitter = new EventEmitter<void>();
 
   onChange: Function = () => {};
   file: File | null = null;
 
-  constructor(private host: ElementRef<HTMLInputElement>) {
+  constructor(private host: ElementRef<HTMLInputElement>, private fileStore: FileStore) {
   }
 
   @HostListener('change', ['$event.target.files']) emitFiles(event: FileList) {
@@ -72,16 +73,15 @@ export class FileUploadDialogComponent implements ControlValueAccessor {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: Function) {
-  }
+  registerOnTouched(fn: Function) {}
 
   uploadFile() {
     if (!this.file) {
       return;
     }
 
-    console.log('uploading file');
-    this.fileUploadedEmitter.emit(this.file);
+    this.fileStore.setFileToUpload(this.file);
+    this.fileUploadedEmitter.emit();
   }
 
   handleFileDeleted() {

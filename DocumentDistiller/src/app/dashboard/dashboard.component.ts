@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 import {ActionType} from "./constants/FrontendConstants";
 import {FileService} from "../services/file.service";
+import {FileStore} from "../stores/file.store";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
@@ -17,20 +19,21 @@ export class DashboardComponent {
     this.fileUploadDialogHidden = false;
   }
 
-  async uploadFileToServer(file: File) {
+  async uploadFileToServer() {
     let response;
     switch (this.fileUploadDialogActionType) {
       case ActionType.Summarise:
-        response = await this.fileService.summariseDocument(file);
+        response = await this.fileService.summariseDocument();
+        console.log(response);
         break;
       case ActionType.KeySentences:
-        response = await this.fileService.getKeySentences(file);
+        response = await this.fileService.getKeySentences();
         break;
       case ActionType.KeyPoints:
-        response = await this.fileService.getKeyPoints(file);
+        response = await this.fileService.getKeyPoints();
         break;
       case ActionType.Translate:
-        response = await this.fileService.translateDocument(file);
+        response = await this.fileService.translateDocument();
         break;
       default:
         console.error('unknown action type');
