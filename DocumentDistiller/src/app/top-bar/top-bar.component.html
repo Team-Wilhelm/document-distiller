@@ -1,4 +1,4 @@
-<section class="flex flex-col gap-10 mb-5 px-5">
+<section class="flex flex-col gap-10 p-5">
   <div class="flex justify-between items-center">
     <div class="flex items-center px-3 bg-gray-200 rounded-lg focus-within:ring-2">
       <i>
@@ -10,7 +10,13 @@
       <input type="text" placeholder="Search..."
              class="border-transparent bg-transparent focus:border-transparent focus:ring-0">
     </div>
-    <div class="flex">
+    <div class="flex items-center gap-4">
+      <button (click)="logoutEmitter.emit()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="2.5rem" height="2.5rem" viewBox="0 0 24 24">
+          <path fill="#c0c0c0"
+                d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z"/>
+        </svg>
+      </button>
       <img src="https://via.placeholder.com/150" alt="profile picture" class="rounded-full h-12 w-12">
     </div>
   </div>

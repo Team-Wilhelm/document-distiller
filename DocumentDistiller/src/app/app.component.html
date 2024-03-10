@@ -1,5 +1,6 @@
 <main class="h-screen w-screen flex">
-  <nav class="fixed h-screen z-50 w-48 flex flex-col items-center bg-background-sidebar px-5 py-8">
+  <nav class="fixed h-screen z-50 w-48 flex-col items-center bg-background-sidebar px-5 py-8"
+       [ngClass]="!tokenService.isAuthenticated() ? 'hidden' : 'flex'">
     <h2>Sidebar</h2>
     <p>Aasdfsad</p>
     <p>Aasdfsad</p>
@@ -8,8 +9,8 @@
     <p>Aasdfsad</p>
   </nav>
 
-  <div class="flex flex-col items-center ml-48 py-5 bg-background-sidebar">
-    <app-top-bar class="w-full"></app-top-bar>
+  <div class="flex flex-col items-center bg-background-sidebar" [ngClass]="!tokenService.isAuthenticated() ? 'ml-0' : 'ml-48'">
+    <app-top-bar class="w-full" [hidden]="!tokenService.isAuthenticated()" (logoutEmitter)="logout()"></app-top-bar>
     <router-outlet></router-outlet>
   </div>
 </main>

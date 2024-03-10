@@ -7,16 +7,16 @@ import {Subscription} from "rxjs";
 @Component({
   selector: 'app-file-upload-dialog',
   template: `
-    <app-dialog [title]="''" [minWidth]="'50vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
+    <app-dialog [title]="''" [minWidth]="'50vw'" [maxWidth]="'50vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
       <section class="flex flex-col gap-3">
+        <h4 class="text-2xl">Upload and attach files</h4>
+        <p class="text-xl text-gray-500">Upload and attach files to {{ actionType?.toLowerCase() }}</p>
         @if (isWaitingForResponse) {
           <p>I am loading jesus christ give me some time</p>
         } @else if (fileStore.getResultValue()) {
-          <p>Result: {{ fileStore.getResultValue() | json }}</p>
+          <p>{{ fileStore.getResultValue()?.result }}</p>
         } @else {
           <!-- File upload -->
-          <h4 class="text-2xl">Upload and attach files</h4>
-          <p class="text-xl text-gray-500">Upload and attach files to {{ actionType?.toLowerCase() }}</p>
           <label class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer">
             <input type="file" class="w-full opacity-0 cursor-pointer"/>
             <div class="flex flex-col justify-center items-center">
@@ -58,7 +58,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   @Output() closeDialogEmitter = new EventEmitter<boolean>();
   @Output() fileUploadedEmitter = new EventEmitter<void>();
 
-  protected loadingSubscription: Subscription ;
+  protected loadingSubscription: Subscription;
   protected isWaitingForResponse: boolean = false;
 
   onChange: Function = () => {};
