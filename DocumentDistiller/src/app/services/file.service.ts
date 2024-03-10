@@ -26,10 +26,13 @@ export class FileService {
   }
 
   private async sendRequestWithFormData(url: string): Promise<string> {
-    const file = (await firstValueFrom(this.fileStore.getFileToUpload()))!;
+    this.fileStore.setIsWaitingForResponse(true);
+    const file = (await firstValueFrom(this.fileStore.getFileToUploadObservable()))!;
     const formData = new FormData();
     formData.append('file', file);
     const response = await firstValueFrom(this.httpClient.post(url, formData));
+    this.fileStore.setIsWaitingForResponse(false);
+    this.fileStore.setResult(response as string);
     return response as string;
   }
 }

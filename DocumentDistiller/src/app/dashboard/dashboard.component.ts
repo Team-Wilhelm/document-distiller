@@ -1,15 +1,13 @@
 import {Component} from '@angular/core';
 import {ActionType} from "./constants/FrontendConstants";
 import {FileService} from "../services/file.service";
-import {FileStore} from "../stores/file.store";
-import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
-  fileUploadDialogHidden = true;
+  fileUploadDialogHidden = false; // TODO: set to true
   fileUploadDialogActionType: ActionType | undefined;
 
   constructor(private fileService: FileService) {}
