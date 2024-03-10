@@ -8,6 +8,7 @@ using Core.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CognitiveServices.Speech;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -33,6 +34,7 @@ builder.Services.AddScoped<DocumentRepository>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DocumentService>();
+builder.Services.AddScoped<SpeechService>();
 builder.Services.AddSingleton<TextAnalyticsClient>(provider =>
 {
     var languageKey = Environment.GetEnvironmentVariable("LANGUAGE_KEY") ??
@@ -43,6 +45,18 @@ builder.Services.AddSingleton<TextAnalyticsClient>(provider =>
     var endpoint = new Uri(languageEndpoint);
     return new TextAnalyticsClient(endpoint, credentials);
 });
+
+builder.Services.AddSingleton<SpeechSynthesizer>(provider => {
+    var speechKey = Environment.GetEnvironmentVariable("SPEECH_KEY") ??
+                    builder.Configuration.GetSection("AzureAIServices")["SPEECH_KEY"]!;
+    var speechRegion = Environment.GetEnvironmentVariable("SPEECH_REGION") ??
+                       builder.Configuration.GetSection("AzureAIServices")["SPEECH_REGION"]!;
+    var speechConfig = SpeechConfig.FromSubscription(speechKey, speechRegion);
+    speechConfig.SpeechSynthesisVoiceName = "en-GB-RyanNeural";
+    return new SpeechSynthesizer(speechConfig);
+});
+
+
 builder.Services.AddScoped<CurrentContext>();
 builder.Services.AddControllers();
 
