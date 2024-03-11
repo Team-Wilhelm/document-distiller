@@ -1,5 +1,32 @@
-<main class="h-screen w-screen flex flex-col items-center p-5">
-  <app-top-bar class="w-full"></app-top-bar>
-  <router-outlet></router-outlet>
+<main class="h-screen w-screen flex">
+  <nav class="fixed h-screen z-50 w-48 flex-col items-center bg-background-sidebar px-5 py-8"
+       [ngClass]="!tokenService.isAuthenticated() ? 'hidden' : 'flex'">
+    <h2>Document Distiller</h2>
+    <button class="mt-8 my-10 bg-button text-text-light px-5 py-3 rounded-lg">+ New Project</button>
+
+    <!-- Menu -->
+    <div class="flex flex-col gap-2">
+      <app-menu-item title="Dashboard" class="w-full">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 24 24">
+          <path fill="#c0c0c0" d="M13 9V3h8v6zM3 13V3h8v10zm10 8V11h8v10zM3 21v-6h8v6z"/>
+        </svg>
+      </app-menu-item>
+
+      <app-menu-item title="Projects" class="w-full">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 36 36">
+          <path fill="#c0c0c0"
+                d="M30 9H16.42l-2.31-3.18A2 2 0 0 0 12.49 5H6a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h24a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2m0 20H6V13h7.31a2 2 0 0 0 2-2H6V7h6.49l2.61 3.59a1 1 0 0 0 .81.41H30Z"
+                class="clr-i-outline clr-i-outline-path-1"/>
+          <path fill="none" d="M0 0h36v36H0z"/>
+        </svg>
+      </app-menu-item>
+    </div>
+  </nav>
+
+  <div class="flex flex-col items-center bg-background-sidebar"
+       [ngClass]="!tokenService.isAuthenticated() ? 'ml-0' : 'ml-48'">
+    <app-top-bar class="w-full" [hidden]="!tokenService.isAuthenticated()" (logoutEmitter)="logout()"></app-top-bar>
+    <router-outlet></router-outlet>
+  </div>
 </main>
 

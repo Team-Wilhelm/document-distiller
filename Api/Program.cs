@@ -26,6 +26,7 @@ var connectionString = builder.Configuration.GetConnectionString("DbConnection")
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     connectionString ??= Environment.GetEnvironmentVariable("DbConnection");
+    connectionString = "Host=localhost;Port=5432;Database=postgres;Username=root;Password=password;Include Error Detail=true;"; // TODO: remove this line
     options.UseNpgsql(connectionString);
 });
 

@@ -9,17 +9,22 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {
     public DbSet<DocumentSummary> DocumentSummaries { get; set; }
     public DbSet<DocumentKeySentences> DocumentKeySentences { get; set; }
-
+    
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder
+            .Entity<DocumentResult>()
+            .HasDiscriminator(dr => dr.Discriminator);
+        
         modelBuilder.Entity<DocumentSummary>()
             .HasOne<AppUser>()
             .WithMany()
             .HasForeignKey(e => e.OwnerId);
+        
         modelBuilder.Entity<DocumentKeySentences>()
             .HasOne<AppUser>()
             .WithMany()

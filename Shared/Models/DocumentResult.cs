@@ -8,4 +8,6 @@ public abstract class DocumentResult
     public DateTime? CreatedAt { get; set; }
     public DateTime? LastModifiedAt { get; set; }
     public string? FileName { get; set; }
+    public string? Result { get; set; }
+    public string Discriminator { get; set; } = null!;
 }

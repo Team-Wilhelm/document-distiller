@@ -1,9 +1,0 @@
-<section class="flex flex-col w-full h-full">
-  @if (fileUploadDialogHidden) {
-    <h2>File upload dialog</h2>
-    <p>File upload dialog is a component that allows users to upload files to the server.</p>
-    <button (click)="fileUploadDialogHidden = !fileUploadDialogHidden">Show dialog</button>
-  } @else {
-    <app-file-upload-dialog (closeDialogEmitter)="fileUploadDialogHidden = true"></app-file-upload-dialog>
-  }
-</section>
