@@ -13,7 +13,7 @@ public class SpeechController (SpeechService speechService) : ControllerBase
 {
     [HttpGet("speech")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetSpeech([FromBody]string text)
+    public async Task<IActionResult> GetSpeech(string text)
     {
         var audioStream = await speechService.GetSpeechAsStream(text);
         if (audioStream == null)
@@ -22,6 +22,7 @@ public class SpeechController (SpeechService speechService) : ControllerBase
         }
         return File(audioStream, "audio/wav");
     }
+    //seperate uploading the file and getting the audio stream in order to add the text to the body
     
     /*
      * In your Angular application,
