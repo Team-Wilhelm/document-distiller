@@ -4,37 +4,17 @@ namespace Infrastructure;
 
 public class DocumentRepository(AppDbContext dbContext)
 {
-    public async Task<DocumentSummary> SaveDocumentSummary(Guid ownerId, string summary)
+    public async Task<DocumentSummary> SaveDocumentSummary(DocumentSummary summary)
     {
-        var document = new DocumentSummary
-        {
-            OwnerId = ownerId,
-            Title = "Summary",
-            CreatedAt = DateTime.Now.ToUniversalTime(),
-            LastModifiedAt = DateTime.Now.ToUniversalTime(),
-            FileName = "summary.txt",
-            Result = summary
-        };
-        
-        dbContext.DocumentSummaries.Add(document);
+        dbContext.DocumentSummaries.Add(summary);
         await dbContext.SaveChangesAsync();
-        return document;
+        return summary;
     }
 
-    public async Task<DocumentKeySentences> SaveDocumentKeySentences(Guid ownerId, string keySentences)
+    public async Task<DocumentKeySentences> SaveDocumentKeySentences(DocumentKeySentences keySentences)
     {
-        var document = new DocumentKeySentences
-        {
-            OwnerId = ownerId,
-            Title = "Key Sentences",
-            CreatedAt = DateTime.Now.ToUniversalTime(),
-            LastModifiedAt = DateTime.Now.ToUniversalTime(),
-            FileName = "key-sentences.txt",
-            Result = keySentences
-        };
-        
-        dbContext.DocumentKeySentences.Add(document);
+        dbContext.DocumentKeySentences.Add(keySentences);
         await dbContext.SaveChangesAsync();
-        return document;
+        return keySentences;
     }
 }

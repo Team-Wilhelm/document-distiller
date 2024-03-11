@@ -1,9 +1,12 @@
 using System.Text;
+using System.Text.Json;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Shared.Models;
 
 namespace VirtualFriend.Controller;
@@ -18,7 +21,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     public async Task<IActionResult> SummariseDocument(IFormFile file)
     {
         var text = ConvertPdfToString(file);
-        var summarisedText = await documentService.SummariseContent(text);
+        var summarisedText = await documentService.SummariseContent(text, file);
         
         return Ok(summarisedText);
     }
@@ -28,7 +31,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     public async Task<IActionResult> ExtractKeySentences(IFormFile file)
     {
         var text = ConvertPdfToString(file);
-        var keySentences = await documentService.ExtractKeySentences(text);
+        var keySentences = await documentService.ExtractKeySentences(text, file);
         
         return Ok(keySentences);
     }
@@ -49,6 +52,13 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         var translatedText = await documentService.TranslateContent(text);
         
         return Ok(translatedText);
+    }
+    
+    [HttpPost("save-result")]
+    public async Task<IActionResult> SaveResult(DocumentResult result)
+    {
+        var savedResult = await documentService.SaveResult(null, result);
+        return Ok(savedResult);
     }
     
     private string ConvertPdfToString(IFormFile file)

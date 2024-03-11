@@ -3,6 +3,7 @@ import {ControlValueAccessor} from "@angular/forms";
 import {ActionType} from "../../dashboard/constants/FrontendConstants";
 import {FileStore} from "../../stores/file.store";
 import {Subscription} from "rxjs";
+import { FileService } from "src/app/services/file.service";
 
 @Component({
   selector: 'app-file-upload-dialog',
@@ -14,7 +15,16 @@ import {Subscription} from "rxjs";
         @if (isWaitingForResponse) {
           <p>I am loading jesus christ give me some time</p>
         } @else if (fileStore.getResultValue()) {
-          <p>{{ fileStore.getResultValue()?.result }}</p>
+          <p>{{ fileStore.getResultValue()?.result || "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum" }}</p>
+          <div class="flex gap-2">
+            <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
+                    (click)="closeDialog()">Cancel
+            </button>
+            <button
+              class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px] disabled:opacity-60 disabled:cursor-not-allowed"
+              (click)="saveResult()">Save
+            </button>
+          </div>
         } @else {
           <!-- File upload -->
           <label class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer">
@@ -40,11 +50,11 @@ import {Subscription} from "rxjs";
 
           <div class="flex gap-2">
             <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
-                    (click)="closeDialogEmitter.emit()">Cancel
+                    (click)="closeDialog()">Cancel
             </button>
             <button
               class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px] disabled:opacity-60 disabled:cursor-not-allowed"
-              (click)="uploadFile()" [disabled]="!file">Upload
+              (click)="uploadFileToServer()" [disabled]="!file">Upload
             </button>
           </div>
         }
@@ -56,15 +66,15 @@ import {Subscription} from "rxjs";
 export class FileUploadDialogComponent implements ControlValueAccessor, OnDestroy {
   @Input() actionType: ActionType | undefined;
   @Output() closeDialogEmitter = new EventEmitter<boolean>();
-  @Output() fileUploadedEmitter = new EventEmitter<void>();
 
   protected loadingSubscription: Subscription;
   protected isWaitingForResponse: boolean = false;
 
-  onChange: Function = () => {};
+  onChange: Function = () => {
+  };
   file: File | null = null;
 
-  constructor(private host: ElementRef<HTMLInputElement>, protected fileStore: FileStore) {
+  constructor(private host: ElementRef<HTMLInputElement>, protected fileStore: FileStore, private fileService: FileService) {
     this.loadingSubscription = this.fileStore.getIsWaitingForResponseObservable().subscribe((isWaiting: boolean) => {
       this.isWaitingForResponse = isWaiting;
     });
@@ -90,18 +100,50 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: Function) {}
+  registerOnTouched(fn: Function) {
+  }
 
-  uploadFile() {
+  handleFileDeleted() {
+    this.file = null;
+  }
+
+  closeDialog() {
+    this.fileStore.resetFileStore(); // TODO: review
+    this.file = null;
+    this.closeDialogEmitter.emit();
+  }
+
+  async saveResult() {
+    // TODO: exception handling
+    const result = await this.fileService.saveResult();
+    this.fileStore.resetFileStore();
+    this.closeDialog();
+  }
+
+  async uploadFileToServer() {
+    console.log(this.file);
     if (!this.file) {
       return;
     }
 
     this.fileStore.setFileToUpload(this.file);
-    this.fileUploadedEmitter.emit();
-  }
-
-  handleFileDeleted() {
-    this.file = null;
+    let response;
+    switch (this.actionType) {
+      case ActionType.Summarise:
+        response = await this.fileService.summariseDocument();
+        console.log(response);
+        break;
+      case ActionType.KeySentences:
+        response = await this.fileService.getKeySentences();
+        break;
+      case ActionType.KeyPoints:
+        response = await this.fileService.getKeyPoints();
+        break;
+      case ActionType.Translate:
+        response = await this.fileService.translateDocument();
+        break;
+      default:
+        console.error('unknown action type');
+    }
   }
 }

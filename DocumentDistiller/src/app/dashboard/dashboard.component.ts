@@ -16,25 +16,4 @@ export class DashboardComponent {
     this.fileUploadDialogActionType = actionType;
     this.fileUploadDialogHidden = false;
   }
-
-  async uploadFileToServer() {
-    let response;
-    switch (this.fileUploadDialogActionType) {
-      case ActionType.Summarise:
-        response = await this.fileService.summariseDocument();
-        console.log(response);
-        break;
-      case ActionType.KeySentences:
-        response = await this.fileService.getKeySentences();
-        break;
-      case ActionType.KeyPoints:
-        response = await this.fileService.getKeyPoints();
-        break;
-      case ActionType.Translate:
-        response = await this.fileService.translateDocument();
-        break;
-      default:
-        console.error('unknown action type');
-    }
-  }
 }

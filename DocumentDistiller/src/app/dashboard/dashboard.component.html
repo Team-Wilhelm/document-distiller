@@ -35,8 +35,7 @@
 } @else {
   <app-file-upload-dialog
     [actionType]="fileUploadDialogActionType"
-    (closeDialogEmitter)="fileUploadDialogHidden = true"
-    (fileUploadedEmitter)="uploadFileToServer()">
+    (closeDialogEmitter)="fileUploadDialogHidden = true">
   </app-file-upload-dialog>
 }
 

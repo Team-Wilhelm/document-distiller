@@ -1,6 +1,6 @@
 ﻿namespace Shared.Models;
 
-public abstract class DocumentResult
+public class DocumentResult
 {
     public Guid Id { get; set; }
     public Guid OwnerId { get; set; }
@@ -9,5 +9,10 @@ public abstract class DocumentResult
     public DateTime? LastModifiedAt { get; set; }
     public string? FileName { get; set; }
     public string? Result { get; set; }
-    public string Discriminator { get; set; } = null!;
+    public string Discriminator { get; set; }
+    
+    public DocumentResult()
+    {
+        Discriminator = GetType().Name;
+    }
 }

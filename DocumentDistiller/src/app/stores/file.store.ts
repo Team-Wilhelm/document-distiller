@@ -12,7 +12,7 @@ export class FileStore {
 
   constructor() {}
 
-  setFileToUpload(file: File) {
+  setFileToUpload(file: File | null) {
     this.fileToUpload.next(file);
   }
 
@@ -24,7 +24,7 @@ export class FileStore {
     return this.fileToUpload.value;
   }
 
-  setResult(result: DocumentResult) {
+  setResult(result: DocumentResult | null) {
     this.result.next(result);
   }
 
@@ -46,5 +46,11 @@ export class FileStore {
 
   getIsWaitingForResponseValue() {
     return this.isWaitingForResponse.value;
+  }
+
+  resetFileStore() {
+    this.setFileToUpload(null);
+    this.setResult(null);
+    this.setIsWaitingForResponse(false);
   }
 }

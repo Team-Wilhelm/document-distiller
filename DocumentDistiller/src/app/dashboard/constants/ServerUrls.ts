@@ -14,4 +14,5 @@ export class DocumentActions {
   static readonly KEY_SENTENCES = this.baseUrl + '/keysentences';
   static readonly KEY_POINTS = this.baseUrl + '/keypoints';
   static readonly TRANSLATE = this.baseUrl + '/translate';
+  static readonly SAVE_RESULT = this.baseUrl + '/save-result';
 }

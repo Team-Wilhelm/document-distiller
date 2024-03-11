@@ -3,62 +3,14 @@ using Azure;
 using Azure.AI.TextAnalytics;
 using Core.Context;
 using Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Shared.Models;
 
 namespace Core.Services;
 
 public class DocumentService(TextAnalyticsClient client, DocumentRepository documentRepository, CurrentContext currentContext)
 {
-    public async Task<DocumentKeySentences> ExtractKeySentences(string text)
-    {
-        var summaryResult = new StringBuilder();
-        var batchInput = new List<string>
-        {
-            text
-        };
-        
-        var actions = new TextAnalyticsActions
-        {
-            ExtractiveSummarizeActions = new List<ExtractiveSummarizeAction> { new() },
-        };
-        
-        var operation = await client.StartAnalyzeActionsAsync(batchInput, actions);
-        await operation.WaitForCompletionAsync();
-        
-        await foreach (var documentsInPage in operation.Value)
-        {
-            IReadOnlyCollection<ExtractiveSummarizeActionResult> summaryResults = documentsInPage.ExtractiveSummarizeResults;
-            foreach (var summaryActionResults in summaryResults)
-            {
-                if (summaryActionResults.HasError)
-                {
-                    Console.WriteLine("  Error!");
-                    Console.WriteLine($"  Action error code: {summaryActionResults.Error.ErrorCode}.");
-                    Console.WriteLine($"  Message: {summaryActionResults.Error.Message}");
-                    continue;
-                }
-        
-                foreach (var documentResults in summaryActionResults.DocumentsResults)
-                {
-                    if (documentResults.HasError)
-                    {
-                        Console.WriteLine("  Error!");
-                        Console.WriteLine($"  Document error code: {documentResults.Error.ErrorCode}.");
-                        Console.WriteLine($"  Message: {documentResults.Error.Message}");
-                        continue;
-                    }
-        
-                    foreach (var sentence in documentResults.Sentences)
-                    {
-                        summaryResult.AppendLine(sentence.Text);
-                    }
-                }
-            }
-        }
-        return await documentRepository.SaveDocumentKeySentences(currentContext.UserId!.Value, summaryResult.ToString());
-    }
-    
-    public async Task<DocumentSummary> SummariseContent(string text)
+    public async Task<DocumentSummary> SummariseContent(string text, IFormFile file)
     {
         var summaryResult = new StringBuilder();
         var batchInput = new List<string>
@@ -82,9 +34,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
             {
                 if (summaryActionResults.HasError)
                 {
-                    Console.WriteLine("  Error!");
-                    Console.WriteLine($"  Action error code: {summaryActionResults.Error.ErrorCode}.");
-                    Console.WriteLine($"  Message: {summaryActionResults.Error.Message}");
+                    HandleTextAnalyticsError(summaryActionResults.Error, "Action");
                     continue;
                 }
         
@@ -92,9 +42,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
                 {
                     if (documentResults.HasError)
                     {
-                        Console.WriteLine("  Error!");
-                        Console.WriteLine($"  Document error code: {documentResults.Error.ErrorCode}.");
-                        Console.WriteLine($"  Message: {documentResults.Error.Message}");
+                        HandleTextAnalyticsError(summaryActionResults.Error, "Document");
                         continue;
                     }
         
@@ -105,7 +53,74 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
                 }
             }
         }
-        return await documentRepository.SaveDocumentSummary(currentContext.UserId!.Value, summaryResult.ToString());
+
+        var document = new DocumentSummary()
+        {
+            Id = Guid.NewGuid(),
+            OwnerId = currentContext.UserId!.Value,
+            Title = "Summary",
+            CreatedAt = DateTime.Now.ToUniversalTime(),
+            LastModifiedAt = DateTime.Now.ToUniversalTime(),
+            FileName = file.FileName,
+            Result = summaryResult.ToString()
+        };
+
+        return document;
+    }
+    
+    public async Task<DocumentKeySentences> ExtractKeySentences(string text, IFormFile file)
+    {
+        var summaryResult = new StringBuilder();
+        var batchInput = new List<string>
+        {
+            text
+        };
+        
+        var actions = new TextAnalyticsActions
+        {
+            ExtractiveSummarizeActions = new List<ExtractiveSummarizeAction> { new() },
+        };
+        
+        var operation = await client.StartAnalyzeActionsAsync(batchInput, actions);
+        await operation.WaitForCompletionAsync();
+        
+        await foreach (var documentsInPage in operation.Value)
+        {
+            IReadOnlyCollection<ExtractiveSummarizeActionResult> summaryResults = documentsInPage.ExtractiveSummarizeResults;
+            foreach (var summaryActionResults in summaryResults)
+            {
+                if (summaryActionResults.HasError)
+                {
+                    HandleTextAnalyticsError(summaryActionResults.Error, "Action");
+                    continue;
+                }
+        
+                foreach (var documentResults in summaryActionResults.DocumentsResults)
+                {
+                    if (documentResults.HasError)
+                    {
+                        HandleTextAnalyticsError(summaryActionResults.Error, "Document");
+                        continue;
+                    }
+        
+                    foreach (var sentence in documentResults.Sentences)
+                    {
+                        summaryResult.AppendLine(sentence.Text);
+                    }
+                }
+            }
+        }
+        var document = new DocumentKeySentences()
+        {
+            Id = Guid.NewGuid(),
+            OwnerId = currentContext.UserId!.Value,
+            Title = "Key sentences",
+            CreatedAt = DateTime.Now.ToUniversalTime(),
+            LastModifiedAt = DateTime.Now.ToUniversalTime(),
+            FileName = file.FileName,
+            Result = summaryResult.ToString()
+        };
+        return document;
     }
 
     public async Task<string> ExtractKeyPoints(string text)
@@ -128,5 +143,28 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
     public async Task<string?> TranslateContent(string text)
     {
         throw new NotImplementedException();
+    }
+    
+    public async Task<DocumentResult> SaveResult(IFormFile file, DocumentResult result)
+    {
+        // TODO: Save the file somewhere
+        switch (result.Discriminator)
+        {
+            case nameof(DocumentSummary):
+                var summary = new DocumentSummary(result);
+                return await documentRepository.SaveDocumentSummary(summary);
+            case nameof(DocumentKeySentences):
+                var keySentences = new DocumentKeySentences(result);
+                return await documentRepository.SaveDocumentKeySentences(keySentences);
+        }
+        throw new InvalidOperationException("Invalid result type");
+    }
+    
+    // Utility methods
+    private void HandleTextAnalyticsError(TextAnalyticsError error, string type)
+    {
+        Console.WriteLine("  Error!");
+        Console.WriteLine($"  {type} error code: {error.ErrorCode}.");
+        Console.WriteLine($"  Message: {error.Message}");
     }
 }

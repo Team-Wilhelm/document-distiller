@@ -6,4 +6,5 @@ export default interface DocumentResult {
   lastModifiedAt?: Date;
   fileName?: string;
   result?: string;
+  discriminator: string;
 }
