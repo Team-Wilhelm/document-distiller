@@ -5,6 +5,8 @@ using Infrastructure;
 using Azure;
 using Azure.AI.TextAnalytics;
 using Core.Context;
+using Fleck;
+using lib;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +28,7 @@ var connectionString = builder.Configuration.GetConnectionString("DbConnection")
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     connectionString ??= Environment.GetEnvironmentVariable("DbConnection");
-    connectionString = "Host=localhost;Port=5432;Database=postgres;Username=root;Password=password;Include Error Detail=true;"; // TODO: remove this line
+    //connectionString = "Host=localhost;Port=5432;Database=postgres;Username=root;Password=password;Include Error Detail=true;"; // TODO: remove this line
     options.UseNpgsql(connectionString);
 });
 
@@ -36,6 +38,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DocumentService>();
 builder.Services.AddScoped<SpeechService>();
+
 builder.Services.AddSingleton<TextAnalyticsClient>(provider =>
 {
     var languageKey = Environment.GetEnvironmentVariable("LANGUAGE_KEY") ??
@@ -56,6 +59,8 @@ builder.Services.AddSingleton<SpeechSynthesizer>(provider => {
     speechConfig.SpeechSynthesisVoiceName = "en-GB-RyanNeural";
     return new SpeechSynthesizer(speechConfig);
 });
+
+var eventHandlers = builder.FindAndInjectClientEventHandlers(Assembly.GetExecutingAssembly(), ServiceLifetime.Scoped);
 
 
 builder.Services.AddScoped<CurrentContext>();
@@ -146,6 +151,39 @@ builder.Services.Configure<FormOptions>(options =>
 });
 
 var app = builder.Build();
+
+var server = new WebSocketServer("ws://0.0.0.0:8181");
+
+server.Start(ws =>
+{
+    ws.OnMessage = async message =>
+    {
+        try
+        {
+            await app.InvokeClientEventHandler(eventHandlers, ws, message, ServiceLifetime.Scoped);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.InnerException);
+            Console.WriteLine(e.StackTrace);
+            //e.Handle(ws, message);
+        }
+    };
+
+    ws.OnOpen = () =>
+    {
+        //TODO add jwt validation
+        Console.WriteLine("Open!");
+    };
+
+    ws.OnClose = () =>
+    {
+        Console.WriteLine("Close!");
+    };
+    //TODO implement error handling
+    //ws.OnError = e => { e.Handle(ws, null); };
+});
 
 if (args.Contains("--db-init"))
 {
