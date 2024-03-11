@@ -31,9 +31,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<DocumentRepository>();
+builder.Services.AddScoped<ProjectRepository>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DocumentService>();
+builder.Services.AddScoped<ProjectService>();
 builder.Services.AddSingleton<TextAnalyticsClient>(provider =>
 {
     var languageKey = Environment.GetEnvironmentVariable("LANGUAGE_KEY") ??
@@ -137,6 +139,7 @@ if (args.Contains("--db-init"))
 {
     var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.ExecuteSql($"DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
     db.Database.EnsureCreated();
     db.Database.Migrate();
 
@@ -148,6 +151,9 @@ if (args.Contains("--db-init"))
     };
     await userManager.CreateAsync(new AppUser { Email = defaultUser.Email, UserName = defaultUser.Email },
         defaultUser.Password);
+    var guid = userManager.Users.First().Id;
+
+    await db.SeedData(guid);
 }
 
 if (app.Environment.IsDevelopment())

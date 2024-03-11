@@ -8,8 +8,10 @@ using Shared.Models;
 
 namespace Core.Services;
 
-public class DocumentService(TextAnalyticsClient client, DocumentRepository documentRepository, CurrentContext currentContext)
+public class DocumentService(TextAnalyticsClient client, DocumentRepository documentRepository, CurrentContext currentContext, AppDbContext dbContext)
 {
+    Guid projectId = dbContext.Project.First().Id; //TODO: Get the project id dynamically
+    
     public async Task<DocumentSummary> SummariseContent(string text, IFormFile file)
     {
         var summaryResult = new StringBuilder();
@@ -57,7 +59,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         var document = new DocumentSummary()
         {
             Id = Guid.NewGuid(),
-            OwnerId = currentContext.UserId!.Value,
+            ProjectId = projectId,
             Title = "Summary",
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
@@ -110,10 +112,11 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
                 }
             }
         }
+        
         var document = new DocumentKeySentences()
         {
             Id = Guid.NewGuid(),
-            OwnerId = currentContext.UserId!.Value,
+            ProjectId = projectId,
             Title = "Key sentences",
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),

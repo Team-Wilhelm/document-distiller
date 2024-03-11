@@ -3,7 +3,7 @@
 public class DocumentSummary : DocumentResult
 {
     // public string? Summary { get; set; }
-    public string Discriminator { get; set; } = nameof(DocumentSummary);
+    public string Discriminator { get; set; }
     
     public DocumentSummary()
     {
@@ -13,7 +13,7 @@ public class DocumentSummary : DocumentResult
     public DocumentSummary(DocumentResult documentResult)
     {
         Id = documentResult.Id;
-        OwnerId = documentResult.OwnerId;
+        ProjectId = documentResult.ProjectId;
         Title = documentResult.Title;
         CreatedAt = documentResult.CreatedAt;
         LastModifiedAt = documentResult.LastModifiedAt;

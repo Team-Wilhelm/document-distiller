@@ -3,7 +3,7 @@
 public class DocumentKeySentences : DocumentResult
 {
     // public string[] KeySentences { get; set; }
-    public string Discriminator { get; set; } = nameof(DocumentKeySentences);
+    public string Discriminator { get; set; }
     
     public DocumentKeySentences()
     {
@@ -13,7 +13,7 @@ public class DocumentKeySentences : DocumentResult
     public DocumentKeySentences(DocumentResult documentResult)
     {
         Id = documentResult.Id;
-        OwnerId = documentResult.OwnerId;
+        ProjectId = documentResult.ProjectId;
         Title = documentResult.Title;
         CreatedAt = documentResult.CreatedAt;
         LastModifiedAt = documentResult.LastModifiedAt;

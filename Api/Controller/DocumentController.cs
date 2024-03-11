@@ -1,12 +1,9 @@
 using System.Text;
-using System.Text.Json;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Shared.Models;
 
 namespace VirtualFriend.Controller;

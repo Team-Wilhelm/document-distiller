@@ -121,7 +121,6 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   }
 
   async uploadFileToServer() {
-    console.log(this.file);
     if (!this.file) {
       return;
     }
