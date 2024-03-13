@@ -1,4 +1,5 @@
-﻿using Core.Services;
+﻿using System.Text.Json;
+using Core.Services;
 using Fleck;
 using lib;
 
@@ -14,18 +15,30 @@ public class ClientWantsTextToSpeechHandler(SpeechService speechService) : BaseE
 {
     public override async Task Handle(ClientWantsTextToSpeechDto dto, IWebSocketConnection socket)
     {
-        try
-        {
-            var audioStream = await speechService.GetSpeechAsStream(dto.Text);
+        var audioStream = await speechService.GetSpeechAsStream(dto.Text);
             
-            byte[] bytes = new byte[audioStream.Length];
-            await audioStream.ReadAsync(bytes, 0, bytes.Length);
-            
-            await socket.Send(bytes);
-        }
-        catch (Exception ex)
+        var bytes = new byte[audioStream.Length];
+        await audioStream.ReadAsync(bytes, 0, bytes.Length);
+
+        socket.SendDto(new ServerWillSendSpeech
         {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
+            Length = bytes.Length
+        });
+        await socket.Send(bytes);
+    }
+}
+
+public class ServerWillSendSpeech : BaseDto
+{
+    public string Format { get; set; } = "wav";
+    public int Length { get; set; }
+}
+
+public static class SocketExtensionMethods
+{
+    public static void SendDto<T>(this IWebSocketConnection socket, T dto) where T : BaseDto
+    {
+        socket.Send(JsonSerializer.Serialize(dto, new JsonSerializerOptions
+            { PropertyNameCaseInsensitive = true }));
     }
 }

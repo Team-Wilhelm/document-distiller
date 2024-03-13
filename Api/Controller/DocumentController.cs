@@ -19,7 +19,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     public async Task<IActionResult> SummariseDocument(IFormFile file)
     {
         var text = ConvertPdfToString(file);
-        var summarisedText = await documentService.SummariseContent(text);
+        var summarisedText = await documentService.SummariseContent(text, file);
         
         return Ok(summarisedText);
     }
@@ -29,7 +29,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     public async Task<IActionResult> ExtractKeySentences(IFormFile file)
     {
         var text = ConvertPdfToString(file);
-        var keySentences = await documentService.ExtractKeySentences(text);
+        var keySentences = await documentService.ExtractKeySentences(text, file);
         
         return Ok(keySentences);
     }
@@ -57,6 +57,16 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     {
         var savedResult = await documentService.SaveResult(null, result);
         return Ok(savedResult);
+    }
+    
+    //TODO why no worky, how to use discriminator
+    [HttpGet("recent")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DocumentResult>))]
+    public async Task<IActionResult> GetRecentDocuments()
+    {
+        var recentResults = await documentService.GetRecentDocuments();
+        Console.WriteLine("HEEEEEEEEEEEEEYYYYYY"+recentResults.Count);
+        return Ok(recentResults);
     }
     
     private string ConvertPdfToString(IFormFile file)
