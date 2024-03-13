@@ -163,6 +163,11 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         throw new InvalidOperationException("Invalid result type");
     }
     
+    public async Task<List<DocumentResult>> GetRecentDocuments()
+    {
+        return await documentRepository.GetRecentDocuments(currentContext.UserId!.Value);
+    }
+    
     // Utility methods
     private void HandleTextAnalyticsError(TextAnalyticsError error, string type)
     {
