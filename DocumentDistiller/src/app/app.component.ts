@@ -20,4 +20,13 @@ export class AppComponent implements OnInit {
     this.tokenService.logout();
     await this.router.navigate(['/auth']);
   }
+
+  goToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
+  createNewProject() {
+    //TODO: implement
+    // open dialog to create new project and create project on save
+  }
 }

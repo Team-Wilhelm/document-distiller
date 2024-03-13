@@ -8,6 +8,8 @@ import DocumentResult from "../models/document-result";
 @Injectable()
 export class FileService {
 
+  public recentDocuments: DocumentResult[] = [];
+
   constructor(private httpClient: HttpClient, private fileStore: FileStore) {
   }
 
@@ -32,7 +34,15 @@ export class FileService {
     const file = (await firstValueFrom(this.fileStore.getFileToUploadObservable()))!;
 
     const result = this.fileStore.getResultValue()!;
-    return await firstValueFrom(this.httpClient.post<DocumentResult>(DocumentActions.SAVE_RESULT, result));
+    var documentResult = await firstValueFrom(this.httpClient.post<DocumentResult>(DocumentActions.SAVE_RESULT, result));
+    if (documentResult) {
+      this.recentDocuments.push(documentResult);
+    }
+    return documentResult;
+  }
+
+  async getRecentDocuments() {
+    this.recentDocuments = await firstValueFrom(this.httpClient.get<DocumentResult[]>(DocumentActions.RECENT)) ?? [];
   }
 
   private async sendRequestWithFormData(url: string): Promise<DocumentResult> {

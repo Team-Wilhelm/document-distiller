@@ -8,6 +8,8 @@ import {ProjectCardComponent} from "./project-card/project-card.component";
 import {NoteCardComponent} from "./note-card/note-card.component";
 import {FileUploadModule} from "../file-upload-page/file-upload.module";
 import {MenuItemComponent} from "./menu-item/menu-item.component";
+import {TruncatePipe} from "./project-card/truncate-pipe";
+import {RouterLink} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -16,16 +18,19 @@ import {MenuItemComponent} from "./menu-item/menu-item.component";
     MyProjectsComponent,
     ProjectCardComponent,
     NoteCardComponent,
-    MenuItemComponent
+    MenuItemComponent,
+    TruncatePipe
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FileUploadModule
+    FileUploadModule,
+    RouterLink
   ],
   exports: [
     DashboardComponent,
-    MenuItemComponent
+    MenuItemComponent,
+    TruncatePipe
   ]
 })
 export class DashboardModule { }

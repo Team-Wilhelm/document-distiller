@@ -5,6 +5,8 @@ import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
 import {AuthHttpInterceptor} from "../interceptors/auth.interceptor";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FileService} from "./file.service";
+import {ProjectService} from "./project.service";
+import {SpeechService} from "./speech.service";
 
 @NgModule({
   declarations: [],
@@ -21,7 +23,9 @@ import {FileService} from "./file.service";
       useClass: AuthHttpInterceptor,
       multi: true
     },
-    FileService
+    FileService,
+    ProjectService,
+    SpeechService
   ]
 })
 export class ServiceModule { }

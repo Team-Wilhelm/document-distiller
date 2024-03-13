@@ -15,4 +15,12 @@ export class DocumentActions {
   static readonly KEY_POINTS = this.baseUrl + '/keypoints';
   static readonly TRANSLATE = this.baseUrl + '/translate';
   static readonly SAVE_RESULT = this.baseUrl + '/save-result';
+  static readonly RECENT = this.baseUrl + '/recent';
+}
+
+export class ProjectActions {
+  private static baseUrl = environment.baseUrl + '/project';
+  static readonly CREATE = this.baseUrl + '/create';
+  static readonly BASE = this.baseUrl;
+  static readonly UPDATE = this.baseUrl + '/update';
 }

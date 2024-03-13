@@ -1,0 +1,11 @@
+<div *ngIf="project">
+  <h2>{{ project?.name }}</h2>
+  <p>{{ project?.description }}</p>
+  <h3>Documents:</h3>
+  <ul>
+    <li *ngFor="let document of project?.documents">
+      {{ document.title }}
+      <!-- Add more document details as needed -->
+    </li>
+  </ul>
+</div>

@@ -2,11 +2,11 @@
   <nav class="fixed h-screen z-50 w-48 flex-col items-center bg-background-sidebar px-5 py-8"
        [ngClass]="!tokenService.isAuthenticated() ? 'hidden' : 'flex'">
     <h2>Document Distiller</h2>
-    <button class="mt-8 my-10 bg-button text-text-light px-5 py-3 rounded-lg">+ New Project</button>
+    <button (click)="createNewProject()" class="mt-8 my-10 bg-button text-text-light px-5 py-3 rounded-lg">+ New Project</button>
 
     <!-- Menu -->
     <div class="flex flex-col gap-2">
-      <app-menu-item title="Dashboard" class="w-full">
+      <app-menu-item title="Dashboard" class="w-full" (click)="goToDashboard()">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 24 24">
           <path fill="#c0c0c0" d="M13 9V3h8v6zM3 13V3h8v10zm10 8V11h8v10zM3 21v-6h8v6z"/>
         </svg>
