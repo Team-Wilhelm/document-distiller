@@ -4,6 +4,7 @@ import DocumentResult from "../models/document-result";
 import {DocumentResultService} from "../services/document-result.service";
 import {Subscription} from "rxjs";
 import {DocumentResultStore} from "../stores/document-result.store";
+import {ProjectService} from "../services/project.service";
 
 @Component({
   selector: 'app-dashboard',

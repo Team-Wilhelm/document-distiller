@@ -3,21 +3,18 @@ import {HttpClient} from "@angular/common/http";
 import {CreateProjectDto, Project, UpdateProjectDto} from "../models/project";
 import {firstValueFrom} from "rxjs";
 import {ProjectActions} from "../dashboard/constants/ServerUrls";
+import {ProjectStore} from "../stores/project.store";
 
 @Injectable()
 export class ProjectService {
-
-  public projects: Project[] = [];
-
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private projectStore: ProjectStore) {
     this.getAllProjects().then();
   }
 
   async getAllProjects() {
     try {
-      this.projects = await firstValueFrom(
-        this.httpClient.get<Project[]>(ProjectActions.BASE)
-      ) ?? [];
+      const projects = await firstValueFrom(this.httpClient.get<Project[]>(ProjectActions.BASE)) ?? [];
+      this.projectStore.setProjects(projects);
     } catch (e) {
       console.error(e);
     }
@@ -36,7 +33,7 @@ export class ProjectService {
     try {
       const createdProject = await firstValueFrom(this.httpClient.post<Project>(ProjectActions.CREATE, project));
       if (createdProject) {
-        this.projects = [...this.projects, createdProject];
+        await this.getAllProjects();
       }
       return createdProject ?? ({} as Project);
     } catch (e) {
@@ -45,7 +42,8 @@ export class ProjectService {
     }
   }
 
-  async updateProject(project: UpdateProjectDto) {
+  // TODO
+  /*async updateProject(project: UpdateProjectDto) {
     try {
       const updatedProject = await firstValueFrom(this.httpClient.put<Project>(ProjectActions.UPDATE, project));
       if (updatedProject) {
@@ -59,12 +57,12 @@ export class ProjectService {
       console.error(e);
       return {} as Project;
     }
-  }
+  }*/
 
   async deleteProject(id: string) {
     try {
       await firstValueFrom(this.httpClient.delete<Project>(`${ProjectActions.BASE}/${id}`));
-      this.projects = this.projects.filter(project => project.id !== id);
+      await this.getAllProjects();
     } catch (e) {
       console.error(e);
     }

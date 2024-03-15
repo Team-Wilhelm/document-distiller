@@ -1,13 +1,16 @@
 <div class="flex flex-col bg-background-card p-5 rounded-lg shadow-md">
   <div class="flex justify-between items-center mb-5">
-    <p>Date of birth</p>
+    <p>{{ document.createdAt | date }}</p>
     <button>
-      ...
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 24 24">
+        <path fill="#c0c0c0"
+              d="M5 10c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2m14 0c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2m-7 0c-1.1 0-2 .9-2 2s.9 2 2 2s2-.9 2-2s-.9-2-2-2"/>
+      </svg>
     </button>
   </div>
-  <h3 class="text-2xl font-bold mb-2">Note title</h3>
+  <h3 class="text-2xl font-bold mb-2">{{ document.title }}</h3>
   <!-- TODO : text ellipsis -->
   <div class="flex justify-between">
-    <p> {{document.result}}</p>
+    <p> {{ document.result }}</p>
   </div>
 </div>

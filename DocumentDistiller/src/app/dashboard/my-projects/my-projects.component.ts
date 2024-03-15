@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {ProjectService} from "../../services/project.service";
+import {ProjectStore} from "../../stores/project.store";
 
 @Component({
   selector: 'app-my-projects',
@@ -7,7 +8,7 @@ import {ProjectService} from "../../services/project.service";
 })
 export class MyProjectsComponent {
 
-  constructor(public projectService: ProjectService){
+  constructor(protected projectStore: ProjectStore){
 
   }
 }
