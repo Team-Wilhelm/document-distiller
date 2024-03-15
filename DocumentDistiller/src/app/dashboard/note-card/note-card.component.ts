@@ -1,5 +1,8 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import DocumentResult from "../../models/document-result";
+import {DocumentResultStore} from "../../stores/document-result.store";
+import {DialogStore} from "../../stores/dialog.store";
+import {CRUD} from "../constants/FrontendConstants";
 
 @Component({
   selector: 'app-note-card',
@@ -7,13 +10,14 @@ import DocumentResult from "../../models/document-result";
 })
 export class NoteCardComponent {
   @Input() document!: DocumentResult;
-  @Output() noteClickedEmitter: EventEmitter<DocumentResult> = new EventEmitter<DocumentResult>();
 
-  constructor() {
+  constructor(private documentResultStore: DocumentResultStore,
+              private dialogStore: DialogStore) {
   }
 
   noteClicked() {
-    console.log('note clicked: ', this.document);
-    this.noteClickedEmitter.emit(this.document);
+    this.documentResultStore.setSelectedDocumentResult(this.document);
+    this.dialogStore.openNoteDialog(CRUD.Read); //TODO: remove hardcoded CRUD type
+    console.log(this.dialogStore.getDialogTypeOpen());
   }
 }

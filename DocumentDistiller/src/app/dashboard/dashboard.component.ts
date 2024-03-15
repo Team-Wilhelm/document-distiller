@@ -1,22 +1,32 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActionType, DialogType, FrontendConstants} from "./constants/FrontendConstants";
-import DocumentResult from "../models/document-result";
 import {DocumentResultService} from "../services/document-result.service";
 import {Subscription} from "rxjs";
-import {DocumentResultStore} from "../stores/document-result.store";
-import {ProjectService} from "../services/project.service";
 import {DialogStore} from "../stores/dialog.store";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent {
-  protected readonly DialogType = DialogType; // for HTML template
+export class DashboardComponent implements OnInit, OnDestroy {
+  protected dialogType: DialogType | null = DialogType.Document; // TODO: revert to null
+
+  private dialogTypeSubscription: Subscription | undefined;
 
   constructor(private documentResultService: DocumentResultService,
-              protected dialogStore:DialogStore) {
+              protected dialogStore: DialogStore) {
 
+  }
+
+  ngOnInit(): void {
+    this.dialogTypeSubscription = this.dialogStore.getDialogTypeOpenAsObservable()
+      .subscribe((dialogType: DialogType | null) => {
+        // this.dialogType = dialogType; // the switch statement in the HTML template will handle the rest
+      });
+  }
+
+  ngOnDestroy() {
+    this.dialogTypeSubscription?.unsubscribe();
   }
 
   // File upload
@@ -31,8 +41,5 @@ export class DashboardComponent {
     this.dialogStore.closeFileUploadDialog();
   }
 
-  // Notes
-
-
-  // Projects
+  protected readonly DialogType = DialogType;
 }

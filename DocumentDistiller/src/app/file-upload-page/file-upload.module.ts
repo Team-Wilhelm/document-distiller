@@ -23,7 +23,8 @@ import {DialogModule} from "../dialog/dialog.module";
         }
     ],
     exports: [
-        FileUploadDialogComponent
+        FileUploadDialogComponent,
+        FileRowComponent
     ]
 })
 export class FileUploadModule { }

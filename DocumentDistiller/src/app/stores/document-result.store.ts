@@ -7,6 +7,7 @@ import DocumentResult from "../models/document-result";
 })
 export class DocumentResultStore {
   latestNotes: BehaviorSubject<DocumentResult[]> = new BehaviorSubject<DocumentResult[]>([]);
+  selectedDocumentResult: BehaviorSubject<DocumentResult | null> = new BehaviorSubject<DocumentResult | null>(null);
 
   constructor() {}
 
@@ -20,5 +21,17 @@ export class DocumentResultStore {
 
   getLatestNotesValue() {
     return this.latestNotes.value;
+  }
+
+  setSelectedDocumentResult(note: DocumentResult | null) {
+    this.selectedDocumentResult.next(note);
+  }
+
+  getSelectedDocumentResultObservable() {
+    return this.selectedDocumentResult.asObservable();
+  }
+
+  getSelectedDocumentResult() {
+    return this.selectedDocumentResult.value;
   }
 }

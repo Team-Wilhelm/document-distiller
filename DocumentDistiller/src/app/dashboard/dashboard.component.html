@@ -1,7 +1,7 @@
-<div class="min-h-screen w-full grid grid-cols-dashboard grid-rows-dashboard gap-5 py-5 px-10 bg-background">
+<div class="min-h-screen w-full grid grid-cols-dashboard grid-rows-dashboard gap-5 bg-background">
   @if (dialogStore.getDialogTypeOpen() === null) {
     <!-- Welcome message -->
-    <div class="col-span-2 mb-5 flex justify-between">
+    <div class="col-span-2 mb-5 mt-5 mx-10 flex justify-between">
       <div class="flex flex-col">
         <h3 class="text-2xl font-bold">Welcome, Betty!</h3>
         <p>It's good to have you back.</p>
@@ -21,17 +21,17 @@
     </div>
 
     <!-- Projects Component -->
-    <app-my-projects class="col-span-1 overflow-y-auto"></app-my-projects>
+    <app-my-projects class="col-span-1 overflow-y-auto mx-10"></app-my-projects>
 
     <!-- Add More Notes Component -->
-    <app-add-more-notes class="col-span-1" (fileUploadDialogOpenedEmitter)="handleFileUploadDialogOpen($event)">
+    <app-add-more-notes class="col-span-1 mx-10" (fileUploadDialogOpenedEmitter)="handleFileUploadDialogOpen($event)">
     </app-add-more-notes>
 
     <!-- Latest Notes Section -->
-   <app-my-notes class="col-span-2"></app-my-notes>
+   <app-my-notes class="col-span-2 mb-5 mx-10"></app-my-notes>
 
   } @else {
-    @switch (dialogStore.getDialogTypeOpen()) {
+    @switch (dialogType) {
       @case (DialogType.FileUpload) {
         <app-file-upload-dialog (closeDialogEmitter)="handleFileUploadDialogClosed($event)">
         </app-file-upload-dialog>

@@ -13,6 +13,7 @@ import {RouterLink} from "@angular/router";
 import {NoteDialogComponent} from "./note-dialog/note-dialog.component";
 import {ProjectDialogComponent} from "./project-dialog/project-dialog.component";
 import {MyNotesComponent} from "./my-notes/my-notes.component";
+import {DialogModule} from "../dialog/dialog.module";
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import {MyNotesComponent} from "./my-notes/my-notes.component";
     CommonModule,
     ReactiveFormsModule,
     FileUploadModule,
-    RouterLink
+    RouterLink,
+    DialogModule
   ],
   exports: [
     DashboardComponent,
