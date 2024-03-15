@@ -136,7 +136,6 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
     switch (this.actionType) {
       case ActionType.Summarise:
         response = await this.fileService.summariseDocument();
-        console.log(response);
         break;
       case ActionType.KeySentences:
         response = await this.fileService.getKeySentences();

@@ -33,7 +33,12 @@ export class AppComponent implements OnInit, OnDestroy {
             title: project.name,
             children: [],
             id: project.id,
-            onClick: () => console.log('clicked on project: ', project.name)
+            onClick: () => {
+              // TODO: doesnt get called
+              console.log('clicked');
+              this.dialogStore.openProjectDialog(CRUD.Read);
+              this.projectStore.setSelectedProject(project);
+            },
           } as MenuItem;
         });
     });

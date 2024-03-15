@@ -18,6 +18,5 @@ export class NoteCardComponent {
   noteClicked() {
     this.documentResultStore.setSelectedDocumentResult(this.document);
     this.dialogStore.openNoteDialog(CRUD.Read);
-    console.log(this.dialogStore.getDialogTypeOpen());
   }
 }
