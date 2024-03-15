@@ -1,4 +1,4 @@
-import DocumentResult from './document-result';
+import {DocumentResult} from './document-result';
 
 export interface Project {
   id: string;

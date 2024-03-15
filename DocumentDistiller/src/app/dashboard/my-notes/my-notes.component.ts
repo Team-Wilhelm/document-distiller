@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DocumentResultStore} from "../../stores/document-result.store";
 import {DocumentResultService} from "../../services/document-result.service";
-import DocumentResult from "../../models/document-result";
+import {DocumentResult} from "../../models/document-result";
 import {Subscription} from "rxjs";
 
 @Component({

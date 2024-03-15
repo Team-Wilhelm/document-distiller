@@ -1,4 +1,4 @@
-import DocumentResult from "../models/document-result";
+import {DocumentResult} from "../models/document-result";
 
 export default class DummyData {
   static getDocumentResult(): DocumentResult {

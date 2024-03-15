@@ -49,13 +49,13 @@ public class DocumentRepository(AppDbContext dbContext)
 
     public async Task<DocumentResult> UpdateDocument(DocumentResult documentResult)
     {
-        if (await dbContext.DocumentResult.FirstOrDefaultAsync(doc => doc.Id == documentResult.Id) is null)
-        {
-            throw new NotFoundException($"Document with ID {documentResult.Id} does not exit");
-        }
-        
         dbContext.DocumentResult.Update(documentResult);
         await dbContext.SaveChangesAsync();
         return documentResult;
+    }
+    
+    public async Task<DocumentResult?> GetById(Guid id)
+    {
+        return await dbContext.DocumentResult.FirstOrDefaultAsync(doc => doc.Id == id);
     }
 }

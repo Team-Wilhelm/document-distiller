@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import DocumentResult from "../../models/document-result";
+import {DocumentResult} from "../../models/document-result";
 import {DocumentResultStore} from "../../stores/document-result.store";
 import {DialogStore} from "../../stores/dialog.store";
 import {CRUD} from "../constants/FrontendConstants";
@@ -17,7 +17,7 @@ export class NoteCardComponent {
 
   noteClicked() {
     this.documentResultStore.setSelectedDocumentResult(this.document);
-    this.dialogStore.openNoteDialog(CRUD.Read); //TODO: remove hardcoded CRUD type
+    this.dialogStore.openNoteDialog(CRUD.Read);
     console.log(this.dialogStore.getDialogTypeOpen());
   }
 }

@@ -7,7 +7,7 @@ import {BehaviorSubject} from "rxjs";
 })
 
 export class DialogStore {
-  dialogTypeOpen: BehaviorSubject<DialogType | null> = new BehaviorSubject<DialogType | null>(DialogType.Document); // TODO: revert to null;
+  dialogTypeOpen: BehaviorSubject<DialogType | null> = new BehaviorSubject<DialogType | null>(null);
   fileUploadDialogActionType: BehaviorSubject<ActionType | null> = new BehaviorSubject<ActionType | null>(null);
   crudType: BehaviorSubject<CRUD | null> = new BehaviorSubject<CRUD | null>(null);
 

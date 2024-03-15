@@ -4,6 +4,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Dtos;
 using Shared.Models;
 
 namespace VirtualFriend.Controller;
@@ -69,17 +70,17 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         return Ok(recentResults);
     }
     
-    [HttpDelete("delete/{id}")]
+    [HttpDelete("delete/{id:guid}")]
     public async Task<IActionResult> DeleteDocument([FromRoute]Guid id)
     {
         await documentService.DeleteDocument(id);
         return Ok();
     }
     
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateDocument(DocumentResult document)
+    [HttpPut("update/{documentId:guid}")]
+    public async Task<IActionResult> UpdateDocument([FromRoute] Guid documentId,[FromBody]UpdateDocumentResultDto updateDocumentResultDto)
     {
-        var updatedDocument = await documentService.UpdateDocument(document);
+        var updatedDocument = await documentService.UpdateDocument(documentId, updateDocumentResultDto);
         return Ok(updatedDocument);
     }
     

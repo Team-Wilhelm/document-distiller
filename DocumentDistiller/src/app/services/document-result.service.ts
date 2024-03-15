@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {DocumentResultStore} from "../stores/document-result.store";
 import {firstValueFrom} from "rxjs";
-import DocumentResult from "../models/document-result";
+import {DocumentResult, UpdateDocumentResultDto} from "../models/document-result";
 import {DocumentActions} from "../dashboard/constants/ServerUrls";
 import {HttpClient} from "@angular/common/http";
 
@@ -17,8 +17,10 @@ export class DocumentResultService {
     this.documentResultStore.setLatestNotes(documents);
   }
 
-  async editDocument(documentResult: DocumentResult) {
-
+  async editDocument(documentId: string, updateDocumentResultDto: UpdateDocumentResultDto) {
+    const updatedDocument = await firstValueFrom(this.httpClient.put<DocumentResult>(DocumentActions.EDIT + documentId, updateDocumentResultDto));
+    await this.getRecentDocuments();
+    return updatedDocument;
   }
 
   async deleteDocument(documentGuid: string) {

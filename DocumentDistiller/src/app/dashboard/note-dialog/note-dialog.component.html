@@ -1,10 +1,22 @@
 <app-dialog [title]="''" [minWidth]="'50vw'" [maxWidth]="'50vw'" (closeDialogEmitter)="closeDialog()">
   <section class="flex flex-col gap-3">
     <div class="flex justify-between">
+      <!-- Title and Date -->
       <div class="flex flex-col justify-between">
-        <h4 class="text-2xl">{{ documentResult?.title }}</h4>
-        <p class="text-xl text-gray-500">{{ documentResult?.lastModifiedAt |date }}</p>
+        @if (crudType === CRUD.Read) {
+          <h4 *ngIf="crudType === CRUD.Read"
+              class="text-2xl">{{ documentResult?.title }}
+          </h4>
+        } @else {
+          <input type="text"
+                 class="text-2xl p-1 rounded-lg border-solid border-gray-300 border-[1px] focus:outline-none focus:border-solid focus:border-gray-500"
+                 [formControl]="formGroup.controls.title">
+        }
+
+        <p class="text-xl text-gray-500">{{ documentResult?.lastModifiedAt | date }}</p>
       </div>
+
+      <!-- Edit and Delete buttons -->
       <div class="flex gap-3">
         <button (click)="editClicked()">
           <svg xmlns="http://www.w3.org/2000/svg" width="1.75rem" height="1.75rem" viewBox="0 0 24 24">
@@ -27,8 +39,14 @@
 
     <!-- Scrollable Note -->
     <div class="overflow-y-auto max-h-[40vh]">
-      <h4 class="text-lg text-gray-500">{{ documentResult?.title }}</h4>
-      <p>{{ documentResult?.result }}</p>
+      <h4 class="text-lg text-gray-500">Result</h4>
+      @if (crudType === CRUD.Read) {
+        <p>{{ documentResult?.result }}</p>
+      } @else {
+        <textarea class="p-1 rounded-lg border-solid border-gray-300 border-[1px] focus:outline-none focus:border-solid focus:border-gray-500 w-full min-h-80"
+                  [formControl]="formGroup.controls.content">
+        </textarea>
+      }
     </div>
 
     <!-- Text to speech -->
@@ -42,6 +60,7 @@
       <p class="text-lg">Press play to have the text read out loud</p>
     </div>
 
+    <!-- Dialog buttons -->
     <div class="flex gap-2 mt-3">
       <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
               (click)="closeDialog()">Cancel
@@ -49,7 +68,7 @@
       <button
         class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px] disabled:opacity-60 disabled:cursor-not-allowed"
         (click)="saveNote()"
-        [disabled]="true">Save
+        [disabled]="formGroup.invalid">Save
       </button>
     </div>
   </section>

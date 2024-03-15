@@ -4,6 +4,8 @@ using Azure.AI.TextAnalytics;
 using Core.Context;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Shared.Dtos;
+using Shared.Exceptions;
 using Shared.Models;
 
 namespace Core.Services;
@@ -173,8 +175,17 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         await documentRepository.DeleteDocument(id);
     }
     
-    public async Task<DocumentResult> UpdateDocument(DocumentResult document)
+    public async Task<DocumentResult> UpdateDocument(Guid documentId, UpdateDocumentResultDto updateDocumentResultDto)
     {
+        var document = await documentRepository.GetById(documentId);
+        if (document is null)
+        {
+            throw new NotFoundException($"Document with ID {documentId} does not exit");
+        }
+        
+        document.Title = updateDocumentResultDto.Title;
+        document.Result = updateDocumentResultDto.Content;
+        document.LastModifiedAt = DateTime.Now.ToUniversalTime();
         return await documentRepository.UpdateDocument(document);
     }
     

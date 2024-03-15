@@ -9,7 +9,7 @@ import {DialogStore} from "../stores/dialog.store";
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  protected dialogType: DialogType | null = DialogType.Document; // TODO: revert to null
+  protected dialogType: DialogType | null = null;
 
   private dialogTypeSubscription: Subscription | undefined;
 

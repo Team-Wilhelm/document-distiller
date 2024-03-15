@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {DocumentActions} from "../dashboard/constants/ServerUrls";
 import {firstValueFrom} from "rxjs";
 import {FileStore} from "../stores/file.store";
-import DocumentResult from "../models/document-result";
+import {DocumentResult} from "../models/document-result";
 
 @Injectable()
 export class FileService {

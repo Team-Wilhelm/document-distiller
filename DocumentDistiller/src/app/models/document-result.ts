@@ -1,4 +1,4 @@
-export default interface DocumentResult {
+export interface DocumentResult {
   id: string; // guid
   ownerId: string; // guid
   projectId: string; // guid
@@ -8,4 +8,10 @@ export default interface DocumentResult {
   fileName?: string;
   result?: string;
   discriminator: string;
+}
+
+export interface UpdateDocumentResultDto {
+  id: string; // guid
+  title: string;
+  result: string;
 }
