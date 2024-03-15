@@ -1,26 +1,46 @@
-import {Component, Input} from '@angular/core';
-import {ActionType} from "./constants/FrontendConstants";
-import {FileService} from "../services/file.service";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActionType, FrontendConstants} from "./constants/FrontendConstants";
 import DocumentResult from "../models/document-result";
+import {DocumentResultService} from "../services/document-result.service";
+import {Subscription} from "rxjs";
+import {DocumentResultStore} from "../stores/document-result.store";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit, OnDestroy {
   fileUploadDialogHidden = true;
   fileUploadDialogActionType: ActionType | undefined;
 
-  constructor(public fileService: FileService) {}
+  latestNotes: DocumentResult[] = [];
+  latestNotesSubscription: Subscription | undefined;
+
+  constructor(public documentResultStore: DocumentResultStore, private documentResultService: DocumentResultService) {
+    documentResultService.getRecentDocuments();
+  }
+
+  ngOnInit(): void {
+    this.latestNotesSubscription = this.documentResultStore
+      .getLatestNotesObservable()
+      .subscribe((notes: DocumentResult[]) => {
+        this.latestNotes = notes;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.latestNotesSubscription?.unsubscribe();
+  }
 
   handleFileUploadDialogOpen(actionType: ActionType) {
     this.fileUploadDialogActionType = actionType;
     this.fileUploadDialogHidden = false;
   }
 
-  getRecentDocuments() {
-    this.fileService.getRecentDocuments().then(documents => {
-      console.log(documents);
-    }).catch(error => console.error(error));
+  handleFileUploadDialogClosed(message: string) {
+    if (message === FrontendConstants.FileSaved) {
+      this.documentResultService.getRecentDocuments();
+    }
+    this.fileUploadDialogHidden = true;
   }
 }

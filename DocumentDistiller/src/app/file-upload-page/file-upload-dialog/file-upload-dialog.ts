@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output} from "@angular/core";
 import {ControlValueAccessor} from "@angular/forms";
-import {ActionType} from "../../dashboard/constants/FrontendConstants";
+import {ActionType, FrontendConstants} from "../../dashboard/constants/FrontendConstants";
 import {FileStore} from "../../stores/file.store";
 import {Subscription} from "rxjs";
 import { FileService } from "src/app/services/file.service";
@@ -15,7 +15,7 @@ import { FileService } from "src/app/services/file.service";
         @if (isWaitingForResponse) {
           <p>I am loading jesus christ give me some time</p>
         } @else if (fileStore.getResultValue()) {
-          <p>{{ fileStore.getResultValue()?.result || "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum" }}</p>
+          <p>{{ fileStore.getResultValue()?.result }}</p>
           <div class="flex gap-2">
             <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
                     (click)="closeDialog()">Cancel
@@ -65,7 +65,7 @@ import { FileService } from "src/app/services/file.service";
 
 export class FileUploadDialogComponent implements ControlValueAccessor, OnDestroy {
   @Input() actionType: ActionType | undefined;
-  @Output() closeDialogEmitter = new EventEmitter<boolean>();
+  @Output() closeDialogEmitter = new EventEmitter<string>();
 
   protected loadingSubscription: Subscription;
   protected isWaitingForResponse: boolean = false;
@@ -107,17 +107,17 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
     this.file = null;
   }
 
-  closeDialog() {
-    this.fileStore.resetFileStore(); // TODO: review
+  closeDialog(message: string = '') {
+    this.fileStore.resetFileStore();
     this.file = null;
-    this.closeDialogEmitter.emit();
+    this.closeDialogEmitter.emit(message);
   }
 
   async saveResult() {
     // TODO: exception handling
     const result = await this.fileService.saveResult();
     this.fileStore.resetFileStore();
-    this.closeDialog();
+    this.closeDialog(FrontendConstants.FileSaved);
   }
 
   async uploadFileToServer() {

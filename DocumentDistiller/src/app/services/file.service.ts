@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {DocumentActions} from "../dashboard/constants/ServerUrls";
 import {firstValueFrom} from "rxjs";
 import {FileStore} from "../stores/file.store";
@@ -7,9 +7,6 @@ import DocumentResult from "../models/document-result";
 
 @Injectable()
 export class FileService {
-
-  public recentDocuments: DocumentResult[] = [];
-
   constructor(private httpClient: HttpClient, private fileStore: FileStore) {
   }
 
@@ -34,15 +31,7 @@ export class FileService {
     const file = (await firstValueFrom(this.fileStore.getFileToUploadObservable()))!;
 
     const result = this.fileStore.getResultValue()!;
-    var documentResult = await firstValueFrom(this.httpClient.post<DocumentResult>(DocumentActions.SAVE_RESULT, result));
-    if (documentResult) {
-      this.recentDocuments.push(documentResult);
-    }
-    return documentResult;
-  }
-
-  async getRecentDocuments() {
-    this.recentDocuments = await firstValueFrom(this.httpClient.get<DocumentResult[]>(DocumentActions.RECENT)) ?? [];
+    return await firstValueFrom(this.httpClient.post<DocumentResult>(DocumentActions.SAVE_RESULT, result));
   }
 
   private async sendRequestWithFormData(url: string): Promise<DocumentResult> {

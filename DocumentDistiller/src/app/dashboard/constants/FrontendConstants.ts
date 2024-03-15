@@ -5,3 +5,7 @@ export enum ActionType {
   Translate = 'Translate to English',
 }
 
+export class FrontendConstants {
+  public static readonly FileSaved = 'File saved';
+}
+
