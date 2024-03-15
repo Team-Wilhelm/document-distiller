@@ -12,7 +12,8 @@
   <div class="grid grid-cols-3 gap-5">
     <!-- Note Cards -->
     <app-note-card *ngFor="let document of documentResultStore.getLatestNotesValue()"
-                   [document]="document">
+                   [document]="document"
+                   class="h-full">
     </app-note-card>
   </div>
 </section>

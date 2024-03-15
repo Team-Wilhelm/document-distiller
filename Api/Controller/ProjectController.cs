@@ -19,11 +19,11 @@ public class ProjectController(ProjectService projectService) : ControllerBase
         return Ok(createdProject);
     }
     
-    [HttpPost("update")]
+    [HttpPut("update/{projectId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Project))]
-    public async Task<IActionResult> UpdateProject(UpdateProjectDto project)
+    public async Task<IActionResult> UpdateProject([FromRoute] Guid projectId, [FromBody] UpdateProjectDto updateProjectDto)
     {
-        var updatedProject = await projectService.UpdateProject(project);
+        var updatedProject = await projectService.UpdateProject(projectId, updateProjectDto);
         return Ok(updatedProject);
     }
     

@@ -37,14 +37,10 @@
         </app-file-upload-dialog>
       }
       @case (DialogType.Document) {
-        <app-note-dialog>
-        </app-note-dialog>
+        <app-note-dialog></app-note-dialog>
       }
       @case (DialogType.Project) {
-        <!--<app-project-dialog [actionType]="projectEditDialogActionType"
-                                 [project]="projectEditDialogProject"
-                                 (closeDialogEmitter)="handleProjectEditDialogClosed($event)">
-        </app-project-dialog>-->
+        <app-project-dialog></app-project-dialog>
       }
     }
   }

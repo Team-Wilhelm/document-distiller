@@ -14,9 +14,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private dialogTypeSubscription: Subscription | undefined;
 
   constructor(private documentResultService: DocumentResultService,
-              protected dialogStore: DialogStore) {
-
-  }
+              protected dialogStore: DialogStore) {}
 
   ngOnInit(): void {
     this.dialogTypeSubscription = this.dialogStore.getDialogTypeOpenAsObservable()

@@ -31,7 +31,7 @@ public class ProjectRepository(AppDbContext dbContext)
         return project;
     }
     
-    public async Task<Project> DeleteProject(Guid id)
+    public async Task DeleteProject(Guid id)
     {
         var project = await dbContext.Project.FirstOrDefaultAsync(p => p.Id == id);
         if (project == null)
@@ -40,7 +40,6 @@ public class ProjectRepository(AppDbContext dbContext)
         }
         dbContext.Project.Remove(project);
         await dbContext.SaveChangesAsync();
-        return project;
     }
     
     public async Task<List<Project>> GetProjects(Guid ownerId)

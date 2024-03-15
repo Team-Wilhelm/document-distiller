@@ -58,4 +58,14 @@ export class DialogStore {
   getCRUDType() {
     return this.crudType.getValue();
   }
+
+  openProjectDialog(crudType: CRUD) {
+    this.crudType.next(crudType);
+    this.dialogTypeOpen.next(DialogType.Project);
+  }
+
+  closeProjectDialog() {
+    this.dialogTypeOpen.next(null);
+    this.crudType.next(null);
+  }
 }

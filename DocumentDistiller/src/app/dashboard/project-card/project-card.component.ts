@@ -1,24 +1,28 @@
 import {Component, Input} from '@angular/core';
 import {Project} from "../../models/project";
-import {Router} from "@angular/router";
+import {ProjectStore} from "../../stores/project.store";
+import {DialogStore} from "../../stores/dialog.store";
+import {CRUD} from "../constants/FrontendConstants";
 
 @Component({
   selector: 'app-project-card',
   template: `
-    <div class="flex flex-col justify-between bg-background-card p-5 rounded-lg shadow-md gap-10">
+    <div class="flex flex-col justify-between bg-background-card p-5 rounded-lg shadow-md gap-10 h-full cursor-pointer"
+         (click)="projectClicked()">
       <h3 class="text-xl font-bold">{{ project.name }}</h3>
       <p>Created: {{ project.createdAt | date: 'longDate' }}</p>
-      <p *ngIf="project.description">{{ project.description | truncate:150:true }}</p>
-      <p (click)="goToProjectPage(project.id)" class="text-blue-600 hover:underline">View Project</p>
+      <p class="flex-grow"> {{ project.description | truncate:150 }}</p>
     </div>`
 })
 export class ProjectCardComponent {
   @Input() project!: Project;
 
-  constructor(public router: Router) {
+  constructor(private projectStore: ProjectStore,
+              private dialogStore: DialogStore) {
   }
 
-  goToProjectPage(id: string) {
-    this.router.navigate(['/project-page', id]);
+  projectClicked() {
+    this.projectStore.setSelectedProject(this.project);
+    this.dialogStore.openProjectDialog(CRUD.Read);
   }
 }

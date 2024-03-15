@@ -24,5 +24,5 @@ export class ProjectActions {
   private static baseUrl = environment.baseUrl + '/project';
   static readonly CREATE = this.baseUrl + '/create';
   static readonly BASE = this.baseUrl;
-  static readonly UPDATE = this.baseUrl + '/update';
+  static readonly UPDATE = this.baseUrl + '/update/'; // requires documentGuid
 }

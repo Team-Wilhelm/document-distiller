@@ -60,13 +60,11 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         return Ok(savedResult);
     }
     
-    //TODO why no worky, how to use discriminator
     [HttpGet("recent")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DocumentResult>))]
     public async Task<IActionResult> GetRecentDocuments()
     {
         var recentResults = await documentService.GetRecentDocuments();
-        Console.WriteLine("HEEEEEEEEEEEEEYYYYYY"+recentResults.Count);
         return Ok(recentResults);
     }
     

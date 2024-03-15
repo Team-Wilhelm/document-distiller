@@ -1,1 +1,71 @@
-<p>project-dialog works!</p>
+<app-dialog [title]="''" [minWidth]="'50vw'" [maxWidth]="'50vw'" (closeDialogEmitter)="closeDialog()">
+  <section class="flex flex-col gap-3">
+    <div class="flex w-full justify-end">
+
+      @if (crudType == CRUD.Read) {
+        <!-- Edit and Delete buttons -->
+        <div class="flex gap-3">
+          <button (click)="editClicked()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.75rem" height="1.75rem" viewBox="0 0 24 24">
+              <path fill="#000000"
+                    d="M5 19h1.425L16.2 9.225L14.775 7.8L5 17.575zm-2 2v-4.25L16.2 3.575q.3-.275.663-.425t.762-.15q.4 0 .775.15t.65.45L20.425 5q.3.275.438.65T21 6.4q0 .4-.137.763t-.438.662L7.25 21zM19 6.4L17.6 5zm-3.525 2.125l-.7-.725L16.2 9.225z"/>
+            </svg>
+          </button>
+          <button (click)="deleteClicked()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.75rem" height="1.75rem" viewBox="0 0 24 24">
+              <path fill="#000000"
+                    d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/>
+            </svg>
+          </button>
+        </div>
+      }
+    </div>
+
+
+    <!-- Content -->
+    @if (crudType == CRUD.Create || crudType == CRUD.Update) {
+      <ng-container *ngTemplateOutlet="create"></ng-container>
+    } @else {
+      <ng-container *ngTemplateOutlet="read"></ng-container>
+    }
+
+    <!-- Dialog buttons -->
+    <div class="flex gap-2">
+      <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
+              (click)="closeDialog()">Cancel
+      </button>
+      <button
+        class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px] disabled:opacity-60 disabled:cursor-not-allowed"
+        (click)="saveProject()"
+        [disabled]="formGroup.invalid">Save
+      </button>
+    </div>
+  </section>
+</app-dialog>
+
+<ng-template #create>
+  <!-- Title and Date -->
+  <div class="flex flex-col justify-between items-center gap-3">
+    <h4 class="text-xl">{{crudType + ' a project'}}</h4>
+    <p class="text-gray-500 mb-5">Projects make it possible to group notes together</p>
+    <input type="text"
+           placeholder="Project Name"
+           class="w-full p-2 rounded-lg border-solid border-gray-300 border-[1px] focus:outline-none focus:border-solid focus:border-gray-500"
+           [formControl]="formGroup.controls.name">
+    <textarea type="text"
+              placeholder="Description (optional)"
+              class="w-full min-h-40 p-2 rounded-lg border-solid border-gray-300 border-[1px] focus:outline-none focus:border-solid focus:border-gray-500"
+              [formControl]="formGroup.controls.description">
+    </textarea>
+  </div>
+</ng-template>
+
+<ng-template #read>
+  <!-- Title and Date -->
+  <div class="flex flex-col gap-3 justify-between">
+    <h4 class="text-2xl">{{ project!.name }}</h4>
+    <p class="text-gray-500">{{ project!.description }}</p>
+  </div>
+</ng-template>
+
+

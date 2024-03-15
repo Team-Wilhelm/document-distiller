@@ -7,6 +7,7 @@ import {BehaviorSubject} from "rxjs";
 })
 export class ProjectStore {
   projects: BehaviorSubject<Project[]> = new BehaviorSubject<Project[]>([]);
+  selectedProject: BehaviorSubject<Project | null> = new BehaviorSubject<Project | null>(null);
 
   constructor() {
   }
@@ -21,5 +22,17 @@ export class ProjectStore {
 
   getProjectsValue() {
     return this.projects.value;
+  }
+
+  setSelectedProject(project: Project | null) {
+    this.selectedProject.next(project);
+  }
+
+  getSelectedProjectObservable() {
+    return this.selectedProject.asObservable();
+  }
+
+  getSelectedProject() {
+    return this.selectedProject.value;
   }
 }

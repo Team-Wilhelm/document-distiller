@@ -42,22 +42,16 @@ export class ProjectService {
     }
   }
 
-  // TODO
-  /*async updateProject(project: UpdateProjectDto) {
+  async updateProject(projectId:string, updateProjectDto: UpdateProjectDto) {
     try {
-      const updatedProject = await firstValueFrom(this.httpClient.put<Project>(ProjectActions.UPDATE, project));
-      if (updatedProject) {
-        const index = this.projects.findIndex(p => p.id === updatedProject.id);
-        if (index !== -1) {
-          this.projects[index] = updatedProject;
-        }
-      }
+      const updatedProject = await firstValueFrom(this.httpClient.put<Project>(ProjectActions.UPDATE + projectId, updateProjectDto));
+      await this.getAllProjects();
       return updatedProject ?? ({} as Project);
     } catch (e) {
       console.error(e);
       return {} as Project;
     }
-  }*/
+  }
 
   async deleteProject(id: string) {
     try {

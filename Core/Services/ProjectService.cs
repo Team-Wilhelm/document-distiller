@@ -21,14 +21,15 @@ public class ProjectService(ProjectRepository projectRepository, CurrentContext 
         return await projectRepository.CreateProject(newProject);
     }
     
-    public async Task<Project> UpdateProject(UpdateProjectDto project)
+    public async Task<Project> UpdateProject(Guid projectId, UpdateProjectDto updateProjectDto)
     {
-        var existingProject = await projectRepository.GetProject(project.Id);
-        existingProject.Name = project.Name ?? existingProject.Name;
-        existingProject.Description = project.Description ?? existingProject.Description;
-        existingProject.LastModifiedAt = DateTime.Now;
-        if (project.Documents != null)
-            existingProject.Documents = project.Documents
+        var existingProject = await projectRepository.GetProject(projectId);
+        existingProject.Name = updateProjectDto.Name ?? existingProject.Name;
+        existingProject.Description = updateProjectDto.Description ?? existingProject.Description;
+        existingProject.LastModifiedAt = DateTime.Now.ToUniversalTime();
+       
+        if (updateProjectDto.Documents != null)
+            existingProject.Documents = updateProjectDto.Documents
                 .Where(d => existingProject.Documents.All(ed => ed.Id != d.Id))
                 .ToList();
         return await projectRepository.UpdateProject(existingProject);
@@ -39,9 +40,9 @@ public class ProjectService(ProjectRepository projectRepository, CurrentContext 
         return await projectRepository.GetProject(id);
     }
     
-    public async Task<Project> DeleteProject(Guid id)
+    public async Task DeleteProject(Guid id)
     {
-        return await projectRepository.DeleteProject(id);
+        await projectRepository.DeleteProject(id);
     }
     
     public async Task<List<Project>> GetProjects()

@@ -1,10 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TokenService} from "./services/token.service";
 import {Router} from "@angular/router";
-import {ProjectService} from "./services/project.service";
 import {Subscription} from "rxjs";
 import {ProjectStore} from "./stores/project.store";
 import {MenuItem} from "./models/menu-item.interface";
+import {DialogStore} from "./stores/dialog.store";
+import {CRUD} from "./dashboard/constants/FrontendConstants";
+import {ProjectService} from "./services/project.service";
 
 @Component({
   selector: 'app-root',
@@ -17,8 +19,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(protected tokenService: TokenService,
               private router: Router,
-              public projectService: ProjectService,
-              protected projectStore: ProjectStore) {}
+              protected projectStore: ProjectStore,
+              private projectService: ProjectService,
+              private dialogStore: DialogStore) {
+    this.projectService.getAllProjects();
+  }
 
   ngOnInit() {
     this.projectSubscription = this.projectStore
@@ -48,7 +53,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   createNewProject() {
-    //TODO: implement
-    // open dialog to create new project and create project on save
+    this.dialogStore.openProjectDialog(CRUD.Create);
   }
 }

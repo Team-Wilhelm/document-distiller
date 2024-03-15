@@ -1,12 +1,13 @@
 import {DocumentResult} from "../models/document-result";
+import {Project} from "../models/project";
 
 export default class DummyData {
   static getDocumentResult(): DocumentResult {
     return {
-      id: "5b21a263-a137-4b80-83d3-28f4f818b116",
-        projectId: "6b83c870-19a5-4dbc-a0e0-4504b02820ab",
-        ownerId: "6b83c870-19a5-4dbc-a0e0-4504b02820ab",
-        title: "Summary",
+        id: "00000000-0000-0000-0000-000000000000",
+        projectId: "00000000-0000-0000-0000-000000000000",
+        ownerId: "00000000-0000-0000-0000-000000000000",
+        title: "Dummy Summary",
         createdAt: new Date("2024-03-15T09:01:10.766358Z"),
         lastModifiedAt: new Date("2024-03-15T09:01:10.766358Z"),
         fileName: "A-kasse.pdf",
@@ -17,5 +18,17 @@ export default class DummyData {
 
   static getDummyFile(): File {
     return new File([""], "dummy-file.txt");
+  }
+
+  static getDummyProject(): Project {
+    return {
+      id: "00000000-0000-0000-0000-000000000000",
+      name: "Dummy Project",
+      description: "This is a dummy project",
+      ownerId: "00000000-0000-0000-0000-000000000000",
+      createdAt: "2024-03-15T09:01:10.766358Z",
+      lastModifiedAt: "2024-03-15T09:01:10.766358Z",
+      documents: [DummyData.getDocumentResult()]
+    } as Project;
   }
 }
