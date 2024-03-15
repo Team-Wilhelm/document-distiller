@@ -69,6 +69,20 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         return Ok(recentResults);
     }
     
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteDocument([FromRoute]Guid id)
+    {
+        await documentService.DeleteDocument(id);
+        return Ok();
+    }
+    
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateDocument(DocumentResult document)
+    {
+        var updatedDocument = await documentService.UpdateDocument(document);
+        return Ok(updatedDocument);
+    }
+    
     private string ConvertPdfToString(IFormFile file)
     {
         var reader = new PdfReader(file.OpenReadStream());

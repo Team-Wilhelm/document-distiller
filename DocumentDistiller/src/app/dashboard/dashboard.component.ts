@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.dialogTypeSubscription = this.dialogStore.getDialogTypeOpenAsObservable()
       .subscribe((dialogType: DialogType | null) => {
-        // this.dialogType = dialogType; // the switch statement in the HTML template will handle the rest
+        this.dialogType = dialogType; // the switch statement in the HTML template will handle the rest
       });
   }
 

@@ -16,4 +16,13 @@ export class DocumentResultService {
     const documents = await firstValueFrom(this.httpClient.get<DocumentResult[]>(DocumentActions.RECENT)) ?? [];
     this.documentResultStore.setLatestNotes(documents);
   }
+
+  async editDocument(documentResult: DocumentResult) {
+
+  }
+
+  async deleteDocument(documentGuid: string) {
+    await firstValueFrom(this.httpClient.delete(DocumentActions.DELETE + documentGuid));
+    await this.getRecentDocuments();
+  }
 }

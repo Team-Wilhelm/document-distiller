@@ -8,6 +8,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {
     public DbSet<DocumentSummary> DocumentSummaries { get; set; }
     public DbSet<DocumentKeySentences> DocumentKeySentences { get; set; }
+    public DbSet<DocumentResult> DocumentResult { get; set; }
     public DbSet<Project> Project { get; set; }
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

@@ -16,6 +16,8 @@ export class DocumentActions {
   static readonly TRANSLATE = this.baseUrl + '/translate';
   static readonly SAVE_RESULT = this.baseUrl + '/save-result';
   static readonly RECENT = this.baseUrl + '/recent';
+  static readonly DELETE = this.baseUrl + '/delete/'; // requires documentGuid
+  static readonly EDIT = this.baseUrl + '/update';
 }
 
 export class ProjectActions {

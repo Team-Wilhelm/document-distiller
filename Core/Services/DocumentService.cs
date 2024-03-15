@@ -168,6 +168,16 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         return await documentRepository.GetRecentDocuments(currentContext.UserId!.Value);
     }
     
+    public async Task DeleteDocument(Guid id)
+    {
+        await documentRepository.DeleteDocument(id);
+    }
+    
+    public async Task<DocumentResult> UpdateDocument(DocumentResult document)
+    {
+        return await documentRepository.UpdateDocument(document);
+    }
+    
     // Utility methods
     private void HandleTextAnalyticsError(TextAnalyticsError error, string type)
     {
