@@ -30,7 +30,9 @@ export class FileService {
     // TODO: look into saving the file too
     const file = (await firstValueFrom(this.fileStore.getFileToUploadObservable()))!;
 
+    const projectId = this.fileStore.getProjectId()!;
     const result = this.fileStore.getResultValue()!;
+    result.projectId = projectId;
     return await firstValueFrom(this.httpClient.post<DocumentResult>(DocumentActions.SAVE_RESULT, result));
   }
 

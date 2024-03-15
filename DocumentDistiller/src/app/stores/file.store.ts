@@ -7,6 +7,7 @@ import {DocumentResult} from "../models/document-result";
 })
 export class FileStore {
   fileToUpload: BehaviorSubject<File | null> = new BehaviorSubject<File | null>(null);
+  projectId: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   result: BehaviorSubject<DocumentResult | null> = new BehaviorSubject<DocumentResult | null>(null);
   isWaitingForResponse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -52,5 +53,18 @@ export class FileStore {
     this.setFileToUpload(null);
     this.setResult(null);
     this.setIsWaitingForResponse(false);
+    this.setProjectId(null);
+  }
+
+  setProjectId(projectId: string | null) {
+    this.projectId.next(projectId);
+  }
+
+  getProjectIdObservable() {
+    return this.projectId.asObservable();
+  }
+
+  getProjectId() {
+    return this.projectId.value;
   }
 }
