@@ -1,9 +1,10 @@
 <main class="h-screen w-screen flex">
   <!-- Sidebar -->
-  <nav class="fixed h-screen z-50 w-48 flex-col items-center bg-background-sidebar px-5 py-8"
+  <nav class="fixed h-screen z-50 w-sidebar flex-col items-center bg-background-sidebar px-5 py-8 shadow-md"
        [ngClass]="!tokenService.isAuthenticated() ? 'hidden' : 'flex'">
-    <h2>Document Distiller</h2>
-    <button (click)="createNewProject()" class="mt-8 my-10 bg-button text-text-light px-5 py-3 rounded-lg">+ New
+    <!-- Logo -->
+    <img src="assets/document-distiller-logo-removebg-preview.png" alt="logo" class="w-full h-12">
+    <button (click)="createNewProject()" class="mt-8 my-10 bg-button text-text-light px-5 py-3 rounded-lg w-full">+ New
       Project
     </button>
 
@@ -45,7 +46,7 @@
 
   <!-- Content -->
   <div class="flex flex-col items-center bg-background-sidebar"
-       [ngClass]="!tokenService.isAuthenticated() ? 'ml-0' : 'ml-48'">
+       [ngClass]="!tokenService.isAuthenticated() ? 'ml-0' : 'ml-sidebar'">
     <router-outlet></router-outlet>
   </div>
 </main>

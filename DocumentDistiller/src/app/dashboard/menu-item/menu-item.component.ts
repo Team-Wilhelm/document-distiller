@@ -36,6 +36,5 @@ export class MenuItemComponent {
   @Input() children: any[] = [];
 
   constructor() {
-    console.log(this.children);
   }
 }

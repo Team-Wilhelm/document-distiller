@@ -10,15 +10,21 @@ import {FileUploadModule} from "../file-upload-page/file-upload.module";
 import {MenuItemComponent} from "./menu-item/menu-item.component";
 import {TruncatePipe} from "./project-card/truncate-pipe";
 import {RouterLink} from "@angular/router";
+import {NoteDialogComponent} from "./note-dialog/note-dialog.component";
+import {ProjectDialogComponent} from "./project-dialog/project-dialog.component";
+import {MyNotesComponent} from "./my-notes/my-notes.component";
 
 @NgModule({
   declarations: [
     DashboardComponent,
     AddMoreNotesComponent,
     MyProjectsComponent,
+    MyNotesComponent,
     ProjectCardComponent,
     NoteCardComponent,
     MenuItemComponent,
+    NoteDialogComponent,
+    ProjectDialogComponent,
     TruncatePipe
   ],
   imports: [

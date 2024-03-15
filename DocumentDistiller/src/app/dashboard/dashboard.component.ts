@@ -1,47 +1,38 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActionType, FrontendConstants} from "./constants/FrontendConstants";
+import {ActionType, DialogType, FrontendConstants} from "./constants/FrontendConstants";
 import DocumentResult from "../models/document-result";
 import {DocumentResultService} from "../services/document-result.service";
 import {Subscription} from "rxjs";
 import {DocumentResultStore} from "../stores/document-result.store";
 import {ProjectService} from "../services/project.service";
+import {DialogStore} from "../stores/dialog.store";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  fileUploadDialogHidden = true;
-  fileUploadDialogActionType: ActionType | undefined;
+export class DashboardComponent {
+  protected readonly DialogType = DialogType; // for HTML template
 
-  latestNotes: DocumentResult[] = [];
-  latestNotesSubscription: Subscription | undefined;
+  constructor(private documentResultService: DocumentResultService,
+              protected dialogStore:DialogStore) {
 
-  constructor(public documentResultStore: DocumentResultStore, private documentResultService: DocumentResultService) {
-    documentResultService.getRecentDocuments();
   }
 
-  ngOnInit(): void {
-    this.latestNotesSubscription = this.documentResultStore
-      .getLatestNotesObservable()
-      .subscribe((notes: DocumentResult[]) => {
-        this.latestNotes = notes;
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.latestNotesSubscription?.unsubscribe();
-  }
-
+  // File upload
   handleFileUploadDialogOpen(actionType: ActionType) {
-    this.fileUploadDialogActionType = actionType;
-    this.fileUploadDialogHidden = false;
+    this.dialogStore.openFileUploadDialog(actionType);
   }
 
   handleFileUploadDialogClosed(message: string) {
     if (message === FrontendConstants.FileSaved) {
       this.documentResultService.getRecentDocuments();
     }
-    this.fileUploadDialogHidden = true;
+    this.dialogStore.closeFileUploadDialog();
   }
+
+  // Notes
+
+
+  // Projects
 }

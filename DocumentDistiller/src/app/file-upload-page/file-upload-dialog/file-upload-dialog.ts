@@ -4,6 +4,7 @@ import {ActionType, FrontendConstants} from "../../dashboard/constants/FrontendC
 import {FileStore} from "../../stores/file.store";
 import {Subscription} from "rxjs";
 import { FileService } from "src/app/services/file.service";
+import {DialogStore} from "../../stores/dialog.store";
 
 @Component({
   selector: 'app-file-upload-dialog',
@@ -64,20 +65,25 @@ import { FileService } from "src/app/services/file.service";
 })
 
 export class FileUploadDialogComponent implements ControlValueAccessor, OnDestroy {
-  @Input() actionType: ActionType | undefined;
   @Output() closeDialogEmitter = new EventEmitter<string>();
 
   protected loadingSubscription: Subscription;
   protected isWaitingForResponse: boolean = false;
 
+  actionType: ActionType | null;
+
   onChange: Function = () => {
   };
   file: File | null = null;
 
-  constructor(private host: ElementRef<HTMLInputElement>, protected fileStore: FileStore, private fileService: FileService) {
+  constructor(private host: ElementRef<HTMLInputElement>,
+              protected fileStore: FileStore,
+              private fileService: FileService,
+              protected dialogStore: DialogStore) {
     this.loadingSubscription = this.fileStore.getIsWaitingForResponseObservable().subscribe((isWaiting: boolean) => {
       this.isWaitingForResponse = isWaiting;
     });
+    this.actionType = this.dialogStore.getFileUploadDialogActionType();
   }
 
   ngOnDestroy() {

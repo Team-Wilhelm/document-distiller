@@ -15,7 +15,11 @@ module.exports = {
         'dashboard': 'auto 1fr 1fr',
       },
       width: {
-        'screen-no-sidebar': 'calc(100vw - 192px)',
+        'screen-no-sidebar': 'calc(100vw - 230px)',
+        'sidebar': '230px',
+      },
+      margin: {
+        'sidebar': '230px',
       },
       colors : {
         'background': '#F7F6F3',
