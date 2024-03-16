@@ -19,4 +19,8 @@ export class NoteCardComponent {
     this.documentResultStore.setSelectedDocumentResult(this.document);
     this.dialogStore.openNoteDialog(CRUD.Read);
   }
+
+  getSentencesToDisplay() {
+    return this.document.result?.split('\n');
+  }
 }

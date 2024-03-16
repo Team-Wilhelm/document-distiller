@@ -9,15 +9,17 @@
   </div>
   <div class="flex flex-col gap-3">
 
-    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3" (click)="onClickSummarise()">
+    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3"
+         (click)="onClickSummarise()">
       <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="addMoreSize" [attr.height]="addMoreSize"
            viewBox="0 0 24 24">
         <path fill="#c0c0c0" d="M4 9h16v2H4zm0 4h10v2H4z"/>
       </svg>
-      <p class="font-semibold">{{ActionType.Summarise}}</p>
+      <p class="font-semibold">{{ ActionType.Summarise }}</p>
     </div>
 
-    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3" (click)="onClickKeySentences()">
+    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3"
+         (click)="onClickKeySentences()">
       <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="addMoreSize" [attr.height]="addMoreSize"
            viewBox="0 0 24 24">
         <path fill="#c0c0c0"
@@ -26,22 +28,24 @@
       <p class="font-semibold">{{ ActionType.KeySentences }}</p>
     </div>
 
-    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3" (click)="onClickTranslate()">
+    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3"
+         (click)="onClickImageToText()">
       <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="addMoreSize" [attr.height]="addMoreSize"
-           viewBox="0 0 24 24">
+           viewBox="0 0 20 20">
         <path fill="#c0c0c0"
-              d="m11.9 22l4.55-12h2.1l4.55 12H21l-1.075-3.05h-4.85L14 22zM4 19l-1.4-1.4l5.05-5.05q-.875-.875-1.588-2T4.75 8h2.1q.5.975 1 1.7t1.2 1.45q.825-.825 1.713-2.313T12.1 6H1V4h7V2h2v2h7v2h-2.9q-.525 1.8-1.575 3.7t-2.075 2.9l2.4 2.45l-.75 2.05l-3.05-3.125zm11.7-1.8h3.6l-1.8-5.1z"/>
+              d="M6 3a3 3 0 0 0-3 3v2.758a4.484 4.484 0 0 1 1-.502V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8c0 .373-.102.722-.28 1.02l-4.669-4.588a1.5 1.5 0 0 0-1.71-.278c.173.283.316.587.424.907a.5.5 0 0 1 .585.084l4.662 4.58A1.991 1.991 0 0 1 14 16h-2.879l.44.44c.163.163.281.355.354.56H14a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm6.5 6a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3m0-1a.5.5 0 1 1 0-1a.5.5 0 0 1 0 1m-4.197 6.596a3.5 3.5 0 1 0-.707.707l2.55 2.55a.5.5 0 0 0 .708-.707zM5.5 15a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5"/>
       </svg>
-      <p class="font-semibold">{{ActionType.Translate}}</p>
+      <p class="font-semibold">{{ ActionType.ImageToText }}</p>
     </div>
 
-    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3" (click)="onClickImageToText()">
+    <div class="bg-background-card p-5 rounded-lg shadow-md flex items-center cursor-pointer gap-3"
+         (click)="onClickTranslate()">
       <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="addMoreSize" [attr.height]="addMoreSize"
            viewBox="0 0 24 24">
         <path fill="#c0c0c0"
               d="m11.9 22l4.55-12h2.1l4.55 12H21l-1.075-3.05h-4.85L14 22zM4 19l-1.4-1.4l5.05-5.05q-.875-.875-1.588-2T4.75 8h2.1q.5.975 1 1.7t1.2 1.45q.825-.825 1.713-2.313T12.1 6H1V4h7V2h2v2h7v2h-2.9q-.525 1.8-1.575 3.7t-2.075 2.9l2.4 2.45l-.75 2.05l-3.05-3.125zm11.7-1.8h3.6l-1.8-5.1z"/>
       </svg>
-      <p class="font-semibold">{{ActionType.ImageToText}}</p>
+      <p class="font-semibold">{{ ActionType.Translate }}</p>
     </div>
   </div>
 </section>

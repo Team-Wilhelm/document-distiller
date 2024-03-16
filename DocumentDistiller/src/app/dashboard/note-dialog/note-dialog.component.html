@@ -41,7 +41,9 @@
     <div class="overflow-y-auto max-h-[40vh]">
       <h4 class="text-lg text-gray-500">Result</h4>
       @if (crudType === CRUD.Read) {
-        <p>{{ documentResult?.result }}</p>
+        @for (sentence of getSentencesToDisplay(); track sentence) {
+          <p>{{ sentence }}</p>
+        }
       } @else {
         <textarea class="p-1 rounded-lg border-solid border-gray-300 border-[1px] focus:outline-none focus:border-solid focus:border-gray-500 w-full min-h-80"
                   [formControl]="formGroup.controls.content">

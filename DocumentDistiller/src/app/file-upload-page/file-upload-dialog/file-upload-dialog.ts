@@ -18,7 +18,9 @@ import {ProjectStore} from "../../stores/project.store";
         @if (isWaitingForResponse) {
           <p>I am loading jesus christ give me some time</p>
         } @else if (fileStore.getResultValue()) {
-          <p>{{ fileStore.getResultValue()?.result }}</p>
+          @for (sentence of getSentencesToDisplay(); track sentence) {
+            <p>{{ sentence }}</p>
+          }
           <div class="flex gap-2">
             <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
                     (click)="closeDialog()">Cancel
@@ -181,5 +183,9 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   onProjectChange(value: Select2UpdateValue) {
     // @ts-ignore
     this.selectedProjectId = value.value;
+  }
+
+  getSentencesToDisplay() {
+    return this.fileStore.getResultValue()?.result?.split('\n');
   }
 }

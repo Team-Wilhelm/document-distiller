@@ -63,4 +63,8 @@ export class NoteDialogComponent {
     this.dialogStore.closeNoteDialog();
     this.documentResultStore.setSelectedDocumentResult(null);
   }
+
+  getSentencesToDisplay() {
+    return this.documentResult?.result?.split('\n');
+  }
 }
