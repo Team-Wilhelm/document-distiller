@@ -13,12 +13,16 @@ export class AddMoreNotesComponent {
     this.openFileUploadDialog(ActionType.Summarise);
   }
 
-  onClickKeyPoints() {
-    this.openFileUploadDialog(ActionType.KeyPoints);
+  onClickKeySentences() {
+    this.openFileUploadDialog(ActionType.KeySentences);
   }
 
   onClickTranslate() {
     this.openFileUploadDialog(ActionType.Translate);
+  }
+
+  onClickImageToText() {
+    this.openFileUploadDialog(ActionType.ImageToText);
   }
 
   openFileUploadDialog(actionType: ActionType) {

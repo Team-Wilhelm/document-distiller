@@ -12,8 +12,8 @@ export class DocumentActions {
   private static baseUrl = environment.baseUrl + '/document';
   static readonly SUMMARISE = this.baseUrl + '/summarise';
   static readonly KEY_SENTENCES = this.baseUrl + '/keysentences';
-  static readonly KEY_POINTS = this.baseUrl + '/keypoints';
   static readonly TRANSLATE = this.baseUrl + '/translate';
+  static readonly IMAGE_TO_TEXT = this.baseUrl + '/image-to-text';
   static readonly SAVE_RESULT = this.baseUrl + '/save-result';
   static readonly RECENT = this.baseUrl + '/recent';
   static readonly DELETE = this.baseUrl + '/delete/'; // requires documentGuid

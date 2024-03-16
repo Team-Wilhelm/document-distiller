@@ -163,11 +163,11 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
       case ActionType.KeySentences:
         response = await this.fileService.getKeySentences();
         break;
-      case ActionType.KeyPoints:
-        response = await this.fileService.getKeyPoints();
-        break;
       case ActionType.Translate:
         response = await this.fileService.translateDocument();
+        break;
+      case ActionType.ImageToText:
+        response = await this.fileService.imageToText();
         break;
       default:
         console.error('unknown action type');

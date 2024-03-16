@@ -155,16 +155,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
     public async Task<DocumentResult> SaveResult(IFormFile file, DocumentResult result)
     {
         // TODO: Save the file somewhere
-        switch (result.Discriminator)
-        {
-            case nameof(DocumentSummary):
-                var summary = new DocumentSummary(result);
-                return await documentRepository.SaveDocumentSummary(summary);
-            case nameof(DocumentKeySentences):
-                var keySentences = new DocumentKeySentences(result);
-                return await documentRepository.SaveDocumentKeySentences(keySentences);
-        }
-        throw new InvalidOperationException("Invalid result type");
+        return await documentRepository.SaveDocumentResult(result);
     }
     
     public async Task<List<DocumentResult>> GetRecentDocuments()

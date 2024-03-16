@@ -18,12 +18,12 @@ export class FileService {
     return await this.sendRequestWithFormData(DocumentActions.KEY_SENTENCES);
   }
 
-  async getKeyPoints(): Promise<DocumentResult> {
-    return await this.sendRequestWithFormData(DocumentActions.KEY_POINTS);
-  }
-
   async translateDocument(): Promise<DocumentResult> {
     return await this.sendRequestWithFormData(DocumentActions.TRANSLATE);
+  }
+
+  async imageToText(): Promise<DocumentResult> {
+    return await this.sendRequestWithFormData(DocumentActions.IMAGE_TO_TEXT);
   }
 
   async saveResult(): Promise<DocumentResult> {
