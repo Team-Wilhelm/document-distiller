@@ -1,6 +1,3 @@
-using System.Text;
-using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Canvas.Parser;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,36 +11,41 @@ namespace VirtualFriend.Controller;
 [Authorize]
 public class DocumentController(DocumentService documentService) : ControllerBase
 {
-    
     [HttpPost("summarise")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentSummary))]
-    public async Task<IActionResult> SummariseDocument(IFormFile file)
+    public async Task<IActionResult> SummariseDocument(IFormFile file, [FromQuery] string noteTitle)
     {
-        var text = ConvertPdfToString(file);
-        var summarisedText = await documentService.SummariseContent(text, file);
-        
+        if (file.ContentType != "application/pdf")
+        {
+            return BadRequest("Invalid file type");
+        }
+        var summarisedText = await documentService.SummariseContent(file, noteTitle);
         return Ok(summarisedText);
     }
     
     [HttpPost("keysentences")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentKeySentences))]
-    public async Task<IActionResult> ExtractKeySentences(IFormFile file)
+    public async Task<IActionResult> ExtractKeySentences(IFormFile file, [FromQuery] string noteTitle)
     {
-        var text = ConvertPdfToString(file);
-        var keySentences = await documentService.ExtractKeySentences(text, file);
-        
+        if (file.ContentType != "application/pdf")
+        {
+            return BadRequest("Invalid file type");
+        }
+        var keySentences = await documentService.ExtractKeySentences(file, noteTitle);
         return Ok(keySentences);
     }
     
+    /** Not used in the application 
     [HttpPost("keypoints")]
     public async Task<IActionResult> ExtractKeyPoints(IFormFile file)
     {
-        var text = ConvertPdfToString(file);
-        var keyPoints = await documentService.ExtractKeyPoints(text);
+        var keyPoints = await documentService.ExtractKeyPoints(file);
         
         return Ok(keyPoints);
     }
+    */
     
+    /* NOT IMPLEMENTED 
     [HttpPost("translate")]
     public async Task<IActionResult> TranslateDocument(IFormFile file)
     {
@@ -52,6 +54,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         
         return Ok(translatedText);
     }
+    */
     
     [HttpPost("save-result")]
     public async Task<IActionResult> SaveResult(DocumentResult result)
@@ -62,14 +65,14 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     
     [HttpPost("image-to-text")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentResult))]
-    public async Task<IActionResult> ImageToText(IFormFile file)
+    public async Task<IActionResult> ImageToText(IFormFile file, [FromQuery] string noteTitle)
     {
         if (file.ContentType != "image/jpeg" && file.ContentType != "image/png")
         {
             return BadRequest("Invalid file type");
         }
         
-        var results = await documentService.ImageToText(file);
+        var results = await documentService.ImageToText(file, noteTitle);
         return Ok(results);
     }
     
@@ -93,20 +96,5 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     {
         var updatedDocument = await documentService.UpdateDocument(documentId, updateDocumentResultDto);
         return Ok(updatedDocument);
-    }
-    
-    private string ConvertPdfToString(IFormFile file)
-    {
-        var reader = new PdfReader(file.OpenReadStream());
-        var pdfDocument = new PdfDocument(reader);
-        var stringBuilder = new StringBuilder();
-        for (int page = 1; page <= pdfDocument.GetNumberOfPages(); page++)
-        {
-            var text = PdfTextExtractor.GetTextFromPage(pdfDocument.GetPage(page));
-            stringBuilder.Append(text);
-        }
-        reader.Close();
-        pdfDocument.Close();
-        return stringBuilder.ToString();
     }
 }
