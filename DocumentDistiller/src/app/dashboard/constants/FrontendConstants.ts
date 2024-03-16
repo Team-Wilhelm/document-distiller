@@ -1,7 +1,7 @@
 export enum ActionType {
   Summarise = 'Summarise a document',
   KeySentences = 'Get key sentences',
-  Translate = 'Translate to English',
+  Translate = 'Translate a document',
   ImageToText = 'Image to text',
 }
 

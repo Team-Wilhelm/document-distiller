@@ -61,12 +61,23 @@ import {ProjectStore} from "../../stores/project.store";
 
           <!-- Project select -->
           <select2 class="p-1 border-[1px] border-solid border-gray-300 rounded-lg cursor-pointer"
-                   [data]="selectOptions"
+                   [data]="projectSelectOptions"
                    placeholder="Select a project"
                    [styleMode]="'noStyle'"
                    [resettable]="true"
                    (update)="onProjectChange($event)">
           </select2>
+
+          <!-- Translation language select -->
+          @if (actionType === ActionType.Translate) {
+            <select2 class="p-1 border-[1px] border-solid border-gray-300 rounded-lg cursor-pointer"
+                     [data]="languageSelectOptions"
+                     placeholder="Select a language to translate to"
+                     [styleMode]="'noStyle'"
+                     [resettable]="true"
+                     (update)="onTargetLanguageChange($event)">
+            </select2>
+          }
 
           <!-- Dialog buttons -->
           <div class="flex gap-2">
@@ -89,11 +100,18 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
 
   protected loadingSubscription: Subscription;
   protected isWaitingForResponse: boolean = false;
+  protected readonly ActionType = ActionType;  // HTML template import
 
   actionType: ActionType | null;
-  selectOptions: Select2Option[] = [];
-  selectedProjectId: string | null = null;
   noteTitleFormControl = new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]);
+
+  // Project select
+  projectSelectOptions: Select2Option[] = [];
+  selectedProjectId: string | null = null;
+
+  // Translation language select
+  languageSelectOptions: Select2Option[] = [];
+  targetLanguage: string | null = null;
 
   onChange: Function = () => {
   };
@@ -108,14 +126,8 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
       this.isWaitingForResponse = isWaiting;
     });
     this.actionType = this.dialogStore.getFileUploadDialogActionType();
-    this.selectOptions = this.projectStore
-      .getProjectsValue()
-      .map(project => {
-      return {
-        value: project.id,
-        label: project.name,
-      };
-    });
+
+   this.initializeSelectOptions();
   }
 
   ngOnDestroy() {
@@ -159,7 +171,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   }
 
   async uploadFileToServer() {
-    if (!this.file || !this.selectedProjectId) {
+    if (!this.file || !this.selectedProjectId || !this.noteTitleFormControl.valid || !this.targetLanguage) {
       return;
     }
 
@@ -174,7 +186,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
         response = await this.fileService.getKeySentences();
         break;
       case ActionType.Translate:
-        response = await this.fileService.translateDocument();
+        response = await this.fileService.translateDocument(this.targetLanguage!);
         break;
       case ActionType.ImageToText:
         response = await this.fileService.imageToText();
@@ -185,7 +197,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   }
 
   get isUploadValid() {
-    return this.file !== null && this.selectedProjectId !== null && this.noteTitleFormControl.valid;
+    return this.file !== null && this.selectedProjectId !== null && this.noteTitleFormControl.valid && this.targetLanguage !== null;
   }
 
   onProjectChange(value: Select2UpdateValue) {
@@ -193,7 +205,34 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
     this.selectedProjectId = value.value;
   }
 
+  onTargetLanguageChange(value: Select2UpdateValue) {
+    // @ts-ignore
+    this.targetLanguage = value.value;
+  }
+
   getSentencesToDisplay() {
     return this.fileStore.getResultValue()?.result?.split('\n');
+  }
+
+  private initializeSelectOptions() {
+    // Initialize project select options
+    this.projectSelectOptions = this.projectStore
+      .getProjectsValue()
+      .map(project => {
+        return {
+          value: project.id,
+          label: project.name,
+        };
+      });
+
+    // Initialize translation language select options
+    this.fileService.getAvailableLanguages().then(languages => {
+      this.languageSelectOptions = languages.map(language => {
+        return {
+          value: language.code,
+          label: language.name,
+        };
+      });
+    });
   }
 }

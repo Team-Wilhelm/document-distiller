@@ -45,16 +45,25 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     }
     */
     
-    /* NOT IMPLEMENTED 
     [HttpPost("translate")]
-    public async Task<IActionResult> TranslateDocument(IFormFile file)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentResult))]
+    public async Task<IActionResult> TranslateDocument(IFormFile file, [FromQuery] string noteTitle, [FromQuery] string targetLanguage)
     {
-        var text = ConvertPdfToString(file);
-        var translatedText = await documentService.TranslateContent(text);
-        
+        if (file.ContentType != "application/pdf")
+        {
+            return BadRequest("Invalid file type");
+        }
+        var translatedText = await documentService.TranslateContent(file, noteTitle, targetLanguage);
         return Ok(translatedText);
     }
-    */
+    
+    [HttpGet("available-languages")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TranslationSelection>))]
+    public async Task<IActionResult> GetAvailableLanguages()
+    {
+        var languages = await documentService.GetAvailableLanguages();
+        return Ok(languages);
+    }
     
     [HttpPost("save-result")]
     public async Task<IActionResult> SaveResult(DocumentResult result)
