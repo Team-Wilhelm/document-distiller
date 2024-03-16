@@ -60,6 +60,19 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         return Ok(savedResult);
     }
     
+    [HttpPost("image-to-text")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentResult))]
+    public async Task<IActionResult> ImageToText(IFormFile file)
+    {
+        if (file.ContentType != "image/jpeg" && file.ContentType != "image/png")
+        {
+            return BadRequest("Invalid file type");
+        }
+        
+        var results = await documentService.ImageToText(file);
+        return Ok(results);
+    }
+    
     [HttpGet("recent")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DocumentResult>))]
     public async Task<IActionResult> GetRecentDocuments()

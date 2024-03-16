@@ -1,19 +1,21 @@
 using System.Text;
 using Azure;
 using Azure.AI.TextAnalytics;
+using Azure.AI.Vision.ImageAnalysis;
+using Core.Configuration;
 using Core.Context;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Options;
 using Shared.Dtos;
 using Shared.Exceptions;
 using Shared.Models;
 
 namespace Core.Services;
 
-public class DocumentService(TextAnalyticsClient client, DocumentRepository documentRepository, CurrentContext currentContext, AppDbContext dbContext)
+public class DocumentService(TextAnalyticsClient client, DocumentRepository documentRepository, CurrentContext currentContext, IOptions<AzureAiSettings> aiSettings)
 {
-    Guid projectId = dbContext.Project.First().Id; //TODO: Get the project id dynamically
-    
     public async Task<DocumentSummary> SummariseContent(string text, IFormFile file)
     {
         var summaryResult = new StringBuilder();
@@ -61,7 +63,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         var document = new DocumentSummary()
         {
             Id = Guid.NewGuid(),
-            ProjectId = projectId,
+            ProjectId = Guid.Empty,
             Title = "Summary",
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
@@ -118,7 +120,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         var document = new DocumentKeySentences()
         {
             Id = Guid.NewGuid(),
-            ProjectId = projectId,
+            ProjectId = Guid.Empty,
             Title = "Key sentences",
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
@@ -187,6 +189,45 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         document.Result = updateDocumentResultDto.Content;
         document.LastModifiedAt = DateTime.Now.ToUniversalTime();
         return await documentRepository.UpdateDocument(document);
+    }
+    
+    public async Task<DocumentResult> ImageToText(IFormFile file)
+    {
+        var endpoint = aiSettings.Value.VISION_ENDPOINT;
+        var key = aiSettings.Value.VISION_KEY;
+
+        var client = new ImageAnalysisClient(new Uri(endpoint), new AzureKeyCredential(key));
+        
+        // Read the file into a stream
+        var stream = file.OpenReadStream();
+        
+        // Convert the stream to binary data, so it can be sent to the service
+        var binaryData = await BinaryData.FromStreamAsync(stream);
+        
+        ImageAnalysisResult result = await client.AnalyzeAsync(
+            binaryData,
+            VisualFeatures.Caption | VisualFeatures.Read,
+            new ImageAnalysisOptions { GenderNeutralCaption = true });
+        
+        var resultList = new List<string>();
+        
+        foreach (DetectedTextBlock block in result.Read.Blocks)
+        foreach (DetectedTextLine line in block.Lines)
+        {
+            resultList.Add(line.Text);
+        }
+        
+        var document = new DocumentResult()
+        {
+            Id = Guid.NewGuid(),
+            ProjectId = Guid.Empty,
+            Title = "Image to text",
+            CreatedAt = DateTime.Now.ToUniversalTime(),
+            LastModifiedAt = DateTime.Now.ToUniversalTime(),
+            FileName = file.FileName,
+            Result = string.Join("\n", resultList)
+        };
+        return document;
     }
     
     // Utility methods

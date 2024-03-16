@@ -4,6 +4,7 @@ using Core.Services;
 using Infrastructure;
 using Azure;
 using Azure.AI.TextAnalytics;
+using Core.Configuration;
 using Core.Context;
 using Fleck;
 using lib;
@@ -23,7 +24,8 @@ using VirtualFriend.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
-var connectionString = builder.Configuration.GetConnectionString("DbConnection"); // for GitHub Actions workflow
+builder.Services.Configure<AzureAiSettings>(builder.Configuration.GetSection("AzureAIServices"));
+var connectionString = builder.Configuration.GetConnectionString("DbConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
