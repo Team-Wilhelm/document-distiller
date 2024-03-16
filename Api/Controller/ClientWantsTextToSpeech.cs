@@ -11,27 +11,31 @@ public class ClientWantsTextToSpeechDto : BaseDto
     public string Text { get; set; }
 }
 
-public class ClientWantsTextToSpeechHandler(SpeechService speechService) : BaseEventHandler<ClientWantsTextToSpeechDto>
+public class ClientWantsTextToSpeech(SpeechService speechService) : BaseEventHandler<ClientWantsTextToSpeechDto>
 {
     public override async Task Handle(ClientWantsTextToSpeechDto dto, IWebSocketConnection socket)
     {
         var audioStream = await speechService.GetSpeechAsStream(dto.Text);
-            
+        audioStream.Position = 0;    
         var bytes = new byte[audioStream.Length];
         await audioStream.ReadAsync(bytes, 0, bytes.Length);
 
-        socket.SendDto(new ServerWillSendSpeech
+        var base64Data = Convert.ToBase64String(bytes);
+        var serverWillSendSpeech = new ServerWillSendSpeech
         {
-            Length = bytes.Length
-        });
-        await socket.Send(bytes);
+            Type = "audio/wav",
+            Length = bytes.Length,
+            Data = base64Data
+        };
+        socket.SendDto(serverWillSendSpeech);
     }
 }
 
 public class ServerWillSendSpeech : BaseDto
 {
-    public string Format { get; set; } = "wav";
+    public string Type { get; set; }
     public int Length { get; set; }
+    public string Data { get; set; }
 }
 
 public static class SocketExtensionMethods
@@ -39,6 +43,6 @@ public static class SocketExtensionMethods
     public static void SendDto<T>(this IWebSocketConnection socket, T dto) where T : BaseDto
     {
         socket.Send(JsonSerializer.Serialize(dto, new JsonSerializerOptions
-            { PropertyNameCaseInsensitive = true }));
+            { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
     }
 }

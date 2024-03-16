@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
 import ReconnectingWebSocket from "reconnecting-websocket";
+import {ServerWillSendSpeech} from "../models/events/speechEvents";
+import {BaseDto} from "../models/events/speechEvents";
 
 @Injectable()
 export class SpeechService {
@@ -22,23 +24,20 @@ export class SpeechService {
     this[data.eventType].call(this, data);
   }
 
-  PrepareToReceiveAudio(dto: ServerWillSendSpeech) {
-    console.log("Server will send audio in " + dto.Format + " format and " + dto.Length + " bytes");
+  ServerWillSendSpeech(dto: ServerWillSendSpeech) {
+    const byteCharacters = atob(dto.data!);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: dto.type });
+
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play().catch(error => console.error("Error playing the audio", error));
   }
 }
 
-export class BaseDto<T> {
-  EventType: string;
-
-  constructor(init?: Partial<T>) {
-    this.EventType = this.constructor.name;
-    Object.assign(this, init);
-  }
-}
-
-export class ServerWillSendSpeech extends BaseDto<ServerWillSendSpeech> {
-  Format: string = "";
-  Length: number = 0;
-}
 
 

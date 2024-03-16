@@ -6,6 +6,8 @@ import DummyData from "../../dummy-data/dummy-data";
 import {CRUD} from "../constants/FrontendConstants";
 import {DocumentResultService} from "../../services/document-result.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {SpeechService} from "../../services/speech.service";
+import {ClientWantsTextToSpeech} from "../../models/events/speechEvents";
 
 @Component({
   selector: 'app-note-dialog',
@@ -24,7 +26,8 @@ export class NoteDialogComponent {
 
   constructor(protected documentResultStore: DocumentResultStore,
               protected dialogStore: DialogStore,
-              private documentResultService: DocumentResultService) {
+              private documentResultService: DocumentResultService,
+              public speechService: SpeechService) {
     this.documentResult = documentResultStore.getSelectedDocumentResult();
     this.crudType = CRUD.Read
 
@@ -64,6 +67,9 @@ export class NoteDialogComponent {
     this.documentResultStore.setSelectedDocumentResult(null);
   }
 
+  playAudio() {
+    this.speechService.rws.send(JSON.stringify(new ClientWantsTextToSpeech({text: this.documentResult!.result})));
+  }
   getSentencesToDisplay() {
     return this.documentResult?.result?.split('\n');
   }
