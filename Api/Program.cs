@@ -30,7 +30,6 @@ var connectionString = builder.Configuration.GetConnectionString("DbConnection")
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     connectionString ??= Environment.GetEnvironmentVariable("DbConnection");
-    connectionString = "Host=localhost;Port=5432;Database=postgres;Username=root;Password=password;Include Error Detail=true;"; // TODO: remove this line
     options.UseNpgsql(connectionString);
 });
 
@@ -102,9 +101,6 @@ builder.Services.AddSwaggerGen(c =>
             Title = "Document Distiller",
             Version = "v1"
         });
-    // using System.Reflection;
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -139,6 +135,17 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddCors(options =>
 {
+    var globalConfig = builder.Configuration.GetSection("Global");
+    options.AddPolicy(name: "Production",
+        policy =>
+        {
+            policy.WithOrigins(
+                    globalConfig.GetValue<string>("FrontEndUrl")
+                    ?? throw new NullReferenceException("FrontEndUrl cannot be null"))
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
     options.AddPolicy(name: "Development", policyBuilder =>
     {
         policyBuilder.AllowAnyHeader()
@@ -176,7 +183,6 @@ server.Start(ws =>
 
     ws.OnOpen = () =>
     {
-        //TODO add jwt validation
         Console.WriteLine("Open!");
     };
 
@@ -184,15 +190,13 @@ server.Start(ws =>
     {
         Console.WriteLine("Close!");
     };
-    //TODO implement error handling
-    //ws.OnError = e => { e.Handle(ws, null); };
 });
 
 if (args.Contains("--db-init"))
 {
     var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.ExecuteSql($"DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
+    db.Database.ExecuteSql($"CREATE SCHEMA IF NOT EXISTS public;");
     db.Database.EnsureCreated();
     db.Database.Migrate();
 
@@ -214,6 +218,10 @@ if (app.Environment.IsDevelopment())
     app.UseCors("Development");
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+if (app.Environment.IsProduction())
+{
+    app.UseCors("Production");
 }
 
 app.UseHttpsRedirection();
