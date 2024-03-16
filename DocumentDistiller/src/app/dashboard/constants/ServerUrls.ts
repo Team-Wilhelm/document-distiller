@@ -18,6 +18,7 @@ export class DocumentActions {
   static readonly RECENT = this.baseUrl + '/recent';
   static readonly DELETE = this.baseUrl + '/delete/'; // requires documentGuid
   static readonly EDIT = this.baseUrl + '/update/'; // requires documentGuid
+  static GET_AVAILABLE_LANGUAGES = this.baseUrl + '/available-languages';
 }
 
 export class ProjectActions {

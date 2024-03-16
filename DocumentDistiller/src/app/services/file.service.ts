@@ -4,6 +4,7 @@ import {DocumentActions} from "../dashboard/constants/ServerUrls";
 import {firstValueFrom} from "rxjs";
 import {FileStore} from "../stores/file.store";
 import {DocumentResult} from "../models/document-result";
+import {TranslationSelection} from "../models/translation-selection.interface";
 
 @Injectable()
 export class FileService {
@@ -25,6 +26,10 @@ export class FileService {
 
   async imageToText(): Promise<DocumentResult> {
     return await this.sendRequestWithFormData(DocumentActions.IMAGE_TO_TEXT);
+  }
+
+  async getAvailableLanguages(): Promise<TranslationSelection[]> {
+    return await firstValueFrom(this.httpClient.get<TranslationSelection[]>(DocumentActions.GET_AVAILABLE_LANGUAGES));
   }
 
   async saveResult(): Promise<DocumentResult> {

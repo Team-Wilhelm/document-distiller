@@ -10,6 +10,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Shared.Dtos;
 using Shared.Exceptions;
 using Shared.Models;
@@ -150,7 +151,7 @@ public class DocumentService(
         using var client = new HttpClient();
         using var request = new HttpRequestMessage();
         var queryParams = $"&to={targetLanguage}";
-        
+
         // Build the request.
         request.Method = HttpMethod.Post;
         request.RequestUri = new Uri(aiSettings.Value.TRANSLATOR_TEXT_ENDPOINT + queryParams);
@@ -160,11 +161,11 @@ public class DocumentService(
 
         // Send the request and get response.
         HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-        
+
         // Read response as a string.
         var result = await response.Content.ReadAsStringAsync();
         var translatedText = JsonConvert.DeserializeObject<List<TranslatorResponse>>(result);
-        
+
         var document = new DocumentResult()
         {
             Id = Guid.NewGuid(),
@@ -245,6 +246,43 @@ public class DocumentService(
             Result = string.Join("\n", resultList)
         };
         return document;
+    }
+
+    /**
+     * Get available languages for translation in the Azure Cognitive Services Translator Text API
+     * with a code and a name for each language.
+     */
+    public async Task<List<TranslationSelection>> GetAvailableLanguages()
+    {
+        const string endpoint =
+            "https://api.cognitive.microsofttranslator.com/languages?api-version=3.0&scope=translation";
+        var client = new HttpClient();
+        var response = await client.GetAsync(endpoint);
+
+        /* Response format:
+         * {
+              "translation": {
+                ...
+                "fr": {
+                  "name": "French",
+                  "nativeName": "Français",
+                  "dir": "ltr"
+                },
+                ...
+              }
+            }
+         */
+        var jsonString = await response.Content.ReadAsStringAsync();
+        JObject jObject = JObject.Parse(jsonString);
+        JObject translationObject = (JObject)jObject["translation"]!;
+
+        // Map the response to a list of TranslationSelection objects, to be used in the UI
+        List<TranslationSelection> languages = translationObject.Properties().Select(p => new TranslationSelection
+        {
+            Code = p.Name,
+            Name = p.Value["name"]!.ToString()
+        }).ToList();
+        return languages;
     }
 
     // Utility methods

@@ -46,6 +46,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     */
     
     [HttpPost("translate")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentResult))]
     public async Task<IActionResult> TranslateDocument(IFormFile file, [FromQuery] string noteTitle, [FromQuery] string targetLanguage)
     {
         if (file.ContentType != "application/pdf")
@@ -54,6 +55,14 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         }
         var translatedText = await documentService.TranslateContent(file, noteTitle, targetLanguage);
         return Ok(translatedText);
+    }
+    
+    [HttpGet("available-languages")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TranslationSelection>))]
+    public async Task<IActionResult> GetAvailableLanguages()
+    {
+        var languages = await documentService.GetAvailableLanguages();
+        return Ok(languages);
     }
     
     [HttpPost("save-result")]
