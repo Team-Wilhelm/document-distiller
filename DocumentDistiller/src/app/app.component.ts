@@ -34,8 +34,6 @@ export class AppComponent implements OnInit, OnDestroy {
             children: [],
             id: project.id,
             onClick: () => {
-              // TODO: doesnt get called
-              console.log('clicked');
               this.dialogStore.openProjectDialog(CRUD.Read);
               this.projectStore.setSelectedProject(project);
             },

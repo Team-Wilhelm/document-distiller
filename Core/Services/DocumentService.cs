@@ -163,6 +163,7 @@ public class DocumentService(
         
         // Read response as a string.
         var result = await response.Content.ReadAsStringAsync();
+        var translatedText = JsonConvert.DeserializeObject<List<TranslatorResponse>>(result);
         
         var document = new DocumentResult()
         {
@@ -172,7 +173,7 @@ public class DocumentService(
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
             FileName = file.FileName,
-            Result = result
+            Result = translatedText[0].Translations[0].Text
         };
         return document;
     }

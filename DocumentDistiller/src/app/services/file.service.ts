@@ -18,8 +18,9 @@ export class FileService {
     return await this.sendRequestWithFormData(DocumentActions.KEY_SENTENCES);
   }
 
-  async translateDocument(): Promise<DocumentResult> {
-    return await this.sendRequestWithFormData(DocumentActions.TRANSLATE);
+  async translateDocument(targetLanguage: string): Promise<DocumentResult> {
+    const queryParamsString = `targetLanguage=${targetLanguage}`;
+    return await this.sendRequestWithFormData(DocumentActions.TRANSLATE, queryParamsString);
   }
 
   async imageToText(): Promise<DocumentResult> {
@@ -36,14 +37,23 @@ export class FileService {
     return await firstValueFrom(this.httpClient.post<DocumentResult>(DocumentActions.SAVE_RESULT, result));
   }
 
-  private async sendRequestWithFormData(url: string): Promise<DocumentResult> {
+  private async sendRequestWithFormData(url: string,  queryParamsString?: string ): Promise<DocumentResult> {
     try {
       this.fileStore.setIsWaitingForResponse(true);
+
+      // FIle
       const file =  this.fileStore.getFileToUploadValue()!;
       const formData = new FormData();
       formData.append('file', file);
+
+      // Query Params
       const noteTitle = this.fileStore.getNoteTitle();
-      const response = await firstValueFrom(this.httpClient.post<DocumentResult>(url + `?noteTitle=${noteTitle}`, formData));
+      let params = `?noteTitle=${noteTitle}`;
+      if (queryParamsString) {
+        params += `&${queryParamsString}`;
+      }
+
+      const response = await firstValueFrom(this.httpClient.post<DocumentResult>(url + params, formData));
       this.fileStore.setIsWaitingForResponse(false);
       this.fileStore.setResult(response);
       return response;
@@ -54,3 +64,5 @@ export class FileService {
     }
   }
 }
+
+

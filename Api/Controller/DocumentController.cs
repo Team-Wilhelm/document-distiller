@@ -48,6 +48,10 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     [HttpPost("translate")]
     public async Task<IActionResult> TranslateDocument(IFormFile file, [FromQuery] string noteTitle, [FromQuery] string targetLanguage)
     {
+        if (file.ContentType != "application/pdf")
+        {
+            return BadRequest("Invalid file type");
+        }
         var translatedText = await documentService.TranslateContent(file, noteTitle, targetLanguage);
         return Ok(translatedText);
     }

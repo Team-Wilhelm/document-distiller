@@ -174,7 +174,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
         response = await this.fileService.getKeySentences();
         break;
       case ActionType.Translate:
-        response = await this.fileService.translateDocument();
+        response = await this.fileService.translateDocument('sk');
         break;
       case ActionType.ImageToText:
         response = await this.fileService.imageToText();
