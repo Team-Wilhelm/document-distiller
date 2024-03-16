@@ -45,16 +45,12 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     }
     */
     
-    /* NOT IMPLEMENTED 
     [HttpPost("translate")]
-    public async Task<IActionResult> TranslateDocument(IFormFile file)
+    public async Task<IActionResult> TranslateDocument(IFormFile file, [FromQuery] string noteTitle, [FromQuery] string targetLanguage)
     {
-        var text = ConvertPdfToString(file);
-        var translatedText = await documentService.TranslateContent(text);
-        
+        var translatedText = await documentService.TranslateContent(file, noteTitle, targetLanguage);
         return Ok(translatedText);
     }
-    */
     
     [HttpPost("save-result")]
     public async Task<IActionResult> SaveResult(DocumentResult result)
