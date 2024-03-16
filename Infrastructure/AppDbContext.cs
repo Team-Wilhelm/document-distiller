@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shared.Dtos;
 using Shared.Models;
 
 namespace Infrastructure;
@@ -9,6 +8,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {
     public DbSet<DocumentSummary> DocumentSummaries { get; set; }
     public DbSet<DocumentKeySentences> DocumentKeySentences { get; set; }
+    public DbSet<DocumentResult> DocumentResult { get; set; }
+    public DbSet<Project> Project { get; set; }
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -20,25 +21,37 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             .Entity<DocumentResult>()
             .HasDiscriminator(dr => dr.Discriminator);
         
-        modelBuilder.Entity<DocumentSummary>()
+        modelBuilder.Entity<Project>()
             .HasOne<AppUser>()
             .WithMany()
             .HasForeignKey(e => e.OwnerId);
-        
-        modelBuilder.Entity<DocumentKeySentences>()
-            .HasOne<AppUser>()
-            .WithMany()
-            .HasForeignKey(e => e.OwnerId);
+
+        modelBuilder.Entity<Project>()
+            .HasMany<DocumentResult>()
+            .WithOne()
+            .HasForeignKey(e => e.ProjectId);
         
         base.OnModelCreating(modelBuilder);
     }
-
-    public async Task SeedData()
+    
+    public async Task SeedData(Guid userId)
     {
-        var defaultUser = new RegisterDto
+        if (Project.Any())
         {
-            Email = "user@app.com",
-            Password = "P@ssw0rd.+"
+            return;
+        }
+        
+        var project = new Project
+        {
+            Id = Guid.NewGuid(),
+            Name = "Default Project",
+            Description = "A default project for testing purposes",
+            CreatedAt = DateTime.Now.ToUniversalTime(),
+            LastModifiedAt = DateTime.Now.ToUniversalTime(),
+            OwnerId = userId
         };
+        
+        Project.Add(project);
+        await SaveChangesAsync();
     }
 }

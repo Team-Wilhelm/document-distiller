@@ -35,7 +35,5 @@ export class AuthPageComponent {
     if (this.loginForm.invalid) {
       return;
     }
-
-    console.log('register');
   }
 }

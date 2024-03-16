@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#select2-0-search-field {
+  @apply bg-gray-200 rounded-lg border-transparent bg-transparent focus:outline-none focus:ring-2;
+}
+
+.select2-results__option.select2-results__option--highlighted {
+  background: #020D13 !important;
+  color: #FFFFFF !important;
+}

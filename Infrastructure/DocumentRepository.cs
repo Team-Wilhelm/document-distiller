@@ -1,40 +1,61 @@
-﻿using Shared.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Shared.Exceptions;
+using Shared.Models;
 
 namespace Infrastructure;
 
 public class DocumentRepository(AppDbContext dbContext)
 {
-    public async Task<DocumentSummary> SaveDocumentSummary(Guid ownerId, string summary)
+    public async Task<DocumentSummary> SaveDocumentSummary(DocumentSummary summary)
     {
-        var document = new DocumentSummary
-        {
-            OwnerId = ownerId,
-            Title = "Summary",
-            CreatedAt = DateTime.Now.ToUniversalTime(),
-            LastModifiedAt = DateTime.Now.ToUniversalTime(),
-            FileName = "summary.txt",
-            Result = summary
-        };
-        
-        dbContext.DocumentSummaries.Add(document);
+        dbContext.DocumentSummaries.Add(summary);
         await dbContext.SaveChangesAsync();
-        return document;
+        return summary;
     }
 
-    public async Task<DocumentKeySentences> SaveDocumentKeySentences(Guid ownerId, string keySentences)
+    public async Task<DocumentKeySentences> SaveDocumentKeySentences(DocumentKeySentences keySentences)
     {
-        var document = new DocumentKeySentences
-        {
-            OwnerId = ownerId,
-            Title = "Key Sentences",
-            CreatedAt = DateTime.Now.ToUniversalTime(),
-            LastModifiedAt = DateTime.Now.ToUniversalTime(),
-            FileName = "key-sentences.txt",
-            Result = keySentences
-        };
-        
-        dbContext.DocumentKeySentences.Add(document);
+        dbContext.DocumentKeySentences.Add(keySentences);
         await dbContext.SaveChangesAsync();
-        return document;
+        return keySentences;
+    }
+
+    public async Task<List<DocumentResult>> GetRecentDocuments(Guid userId)
+    {
+        var documents = new List<DocumentResult>();
+        var userProject = await dbContext.Project.Where(x => x.OwnerId == userId).ToListAsync();
+        // get the most recent 10 documents
+        var sentences = 
+            await dbContext.DocumentKeySentences.Where(x => userProject.Select(y => y.Id)
+                .Contains(x.ProjectId)).OrderByDescending(x => x.CreatedAt).Take(10).ToListAsync();
+        var summaries = 
+            await dbContext.DocumentSummaries.Where(x => userProject.Select(y => y.Id)
+                .Contains(x.ProjectId)).OrderByDescending(x => x.CreatedAt).Take(10).ToListAsync();
+        documents.AddRange(summaries);
+        documents.AddRange(sentences);
+        return documents;
+    }
+
+    public async Task DeleteDocument(Guid documentId)
+    {
+        var document = await dbContext.DocumentResult.FirstOrDefaultAsync(doc => doc.Id == documentId);
+        if (document is null)
+        {
+            throw new NotFoundException($"Document with ID {documentId} does not exit");
+        }
+        dbContext.DocumentResult.Remove(document);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<DocumentResult> UpdateDocument(DocumentResult documentResult)
+    {
+        dbContext.DocumentResult.Update(documentResult);
+        await dbContext.SaveChangesAsync();
+        return documentResult;
+    }
+    
+    public async Task<DocumentResult?> GetById(Guid id)
+    {
+        return await dbContext.DocumentResult.FirstOrDefaultAsync(doc => doc.Id == id);
     }
 }

@@ -1,18 +1,19 @@
 import {Injectable} from "@angular/core";
 import {BehaviorSubject} from "rxjs";
-import DocumentResult from "../models/document-result";
+import {DocumentResult} from "../models/document-result";
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileStore {
   fileToUpload: BehaviorSubject<File | null> = new BehaviorSubject<File | null>(null);
+  projectId: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   result: BehaviorSubject<DocumentResult | null> = new BehaviorSubject<DocumentResult | null>(null);
   isWaitingForResponse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor() {}
 
-  setFileToUpload(file: File) {
+  setFileToUpload(file: File | null) {
     this.fileToUpload.next(file);
   }
 
@@ -24,7 +25,7 @@ export class FileStore {
     return this.fileToUpload.value;
   }
 
-  setResult(result: DocumentResult) {
+  setResult(result: DocumentResult | null) {
     this.result.next(result);
   }
 
@@ -46,5 +47,24 @@ export class FileStore {
 
   getIsWaitingForResponseValue() {
     return this.isWaitingForResponse.value;
+  }
+
+  resetFileStore() {
+    this.setFileToUpload(null);
+    this.setResult(null);
+    this.setIsWaitingForResponse(false);
+    this.setProjectId(null);
+  }
+
+  setProjectId(projectId: string | null) {
+    this.projectId.next(projectId);
+  }
+
+  getProjectIdObservable() {
+    return this.projectId.asObservable();
+  }
+
+  getProjectId() {
+    return this.projectId.value;
   }
 }

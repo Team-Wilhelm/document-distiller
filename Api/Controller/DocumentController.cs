@@ -4,6 +4,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Dtos;
 using Shared.Models;
 
 namespace VirtualFriend.Controller;
@@ -13,12 +14,13 @@ namespace VirtualFriend.Controller;
 [Authorize]
 public class DocumentController(DocumentService documentService) : ControllerBase
 {
+    
     [HttpPost("summarise")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DocumentSummary))]
     public async Task<IActionResult> SummariseDocument(IFormFile file)
     {
         var text = ConvertPdfToString(file);
-        var summarisedText = await documentService.SummariseContent(text);
+        var summarisedText = await documentService.SummariseContent(text, file);
         
         return Ok(summarisedText);
     }
@@ -28,7 +30,7 @@ public class DocumentController(DocumentService documentService) : ControllerBas
     public async Task<IActionResult> ExtractKeySentences(IFormFile file)
     {
         var text = ConvertPdfToString(file);
-        var keySentences = await documentService.ExtractKeySentences(text);
+        var keySentences = await documentService.ExtractKeySentences(text, file);
         
         return Ok(keySentences);
     }
@@ -49,6 +51,35 @@ public class DocumentController(DocumentService documentService) : ControllerBas
         var translatedText = await documentService.TranslateContent(text);
         
         return Ok(translatedText);
+    }
+    
+    [HttpPost("save-result")]
+    public async Task<IActionResult> SaveResult(DocumentResult result)
+    {
+        var savedResult = await documentService.SaveResult(null, result);
+        return Ok(savedResult);
+    }
+    
+    [HttpGet("recent")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DocumentResult>))]
+    public async Task<IActionResult> GetRecentDocuments()
+    {
+        var recentResults = await documentService.GetRecentDocuments();
+        return Ok(recentResults);
+    }
+    
+    [HttpDelete("delete/{id:guid}")]
+    public async Task<IActionResult> DeleteDocument([FromRoute]Guid id)
+    {
+        await documentService.DeleteDocument(id);
+        return Ok();
+    }
+    
+    [HttpPut("update/{documentId:guid}")]
+    public async Task<IActionResult> UpdateDocument([FromRoute] Guid documentId,[FromBody]UpdateDocumentResultDto updateDocumentResultDto)
+    {
+        var updatedDocument = await documentService.UpdateDocument(documentId, updateDocumentResultDto);
+        return Ok(updatedDocument);
     }
     
     private string ConvertPdfToString(IFormFile file)

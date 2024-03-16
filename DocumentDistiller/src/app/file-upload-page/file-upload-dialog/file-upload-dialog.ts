@@ -1,20 +1,33 @@
-import {Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output} from "@angular/core";
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output} from "@angular/core";
 import {ControlValueAccessor} from "@angular/forms";
-import {ActionType} from "../../dashboard/constants/FrontendConstants";
+import {ActionType, FrontendConstants} from "../../dashboard/constants/FrontendConstants";
 import {FileStore} from "../../stores/file.store";
 import {Subscription} from "rxjs";
+import { FileService } from "src/app/services/file.service";
+import {DialogStore} from "../../stores/dialog.store";
+import {Select2, Select2Option, Select2UpdateValue} from "ng-select2-component";
+import {ProjectStore} from "../../stores/project.store";
 
 @Component({
   selector: 'app-file-upload-dialog',
   template: `
     <app-dialog [title]="''" [minWidth]="'50vw'" [maxWidth]="'50vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
-      <section class="flex flex-col gap-3">
+      <section class="flex flex-col gap-3 w-full">
         <h4 class="text-2xl">Upload and attach files</h4>
         <p class="text-xl text-gray-500">Upload and attach files to {{ actionType?.toLowerCase() }}</p>
         @if (isWaitingForResponse) {
           <p>I am loading jesus christ give me some time</p>
         } @else if (fileStore.getResultValue()) {
           <p>{{ fileStore.getResultValue()?.result }}</p>
+          <div class="flex gap-2">
+            <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
+                    (click)="closeDialog()">Cancel
+            </button>
+            <button
+              class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px] disabled:opacity-60 disabled:cursor-not-allowed"
+              (click)="saveResult()">Save
+            </button>
+          </div>
         } @else {
           <!-- File upload -->
           <label class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer">
@@ -38,13 +51,23 @@ import {Subscription} from "rxjs";
             </app-file-row>
           }
 
+          <!-- Project select -->
+          <select2 class="p-1 border-[1px] border-solid border-gray-300 rounded-lg cursor-pointer"
+                   [data]="selectOptions"
+                   placeholder="Select a project"
+                   [styleMode]="'noStyle'"
+                   [resettable]="true"
+                   (update)="onProjectChange($event)">
+          </select2>
+
+          <!-- Dialog buttons -->
           <div class="flex gap-2">
             <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
-                    (click)="closeDialogEmitter.emit()">Cancel
+                    (click)="closeDialog()">Cancel
             </button>
             <button
               class="p-3 flex-grow bg-black text-white rounded-lg border-solid border-gray-300 border-[1px] disabled:opacity-60 disabled:cursor-not-allowed"
-              (click)="uploadFile()" [disabled]="!file">Upload
+              (click)="uploadFileToServer()" [disabled]="!isUploadValid">Upload
             </button>
           </div>
         }
@@ -54,19 +77,35 @@ import {Subscription} from "rxjs";
 })
 
 export class FileUploadDialogComponent implements ControlValueAccessor, OnDestroy {
-  @Input() actionType: ActionType | undefined;
-  @Output() closeDialogEmitter = new EventEmitter<boolean>();
-  @Output() fileUploadedEmitter = new EventEmitter<void>();
+  @Output() closeDialogEmitter = new EventEmitter<string>();
 
   protected loadingSubscription: Subscription;
   protected isWaitingForResponse: boolean = false;
 
-  onChange: Function = () => {};
+  actionType: ActionType | null;
+  selectOptions: Select2Option[] = [];
+  selectedProjectId: string | null = null;
+
+  onChange: Function = () => {
+  };
   file: File | null = null;
 
-  constructor(private host: ElementRef<HTMLInputElement>, protected fileStore: FileStore) {
+  constructor(private host: ElementRef<HTMLInputElement>,
+              protected fileStore: FileStore,
+              private fileService: FileService,
+              protected dialogStore: DialogStore,
+              private projectStore: ProjectStore) {
     this.loadingSubscription = this.fileStore.getIsWaitingForResponseObservable().subscribe((isWaiting: boolean) => {
       this.isWaitingForResponse = isWaiting;
+    });
+    this.actionType = this.dialogStore.getFileUploadDialogActionType();
+    this.selectOptions = this.projectStore
+      .getProjectsValue()
+      .map(project => {
+      return {
+        value: project.id,
+        label: project.name,
+      };
     });
   }
 
@@ -90,18 +129,57 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: Function) {}
-
-  uploadFile() {
-    if (!this.file) {
-      return;
-    }
-
-    this.fileStore.setFileToUpload(this.file);
-    this.fileUploadedEmitter.emit();
+  registerOnTouched(fn: Function) {
   }
 
   handleFileDeleted() {
     this.file = null;
+  }
+
+  closeDialog(message: string = '') {
+    this.fileStore.resetFileStore();
+    this.file = null;
+    this.closeDialogEmitter.emit(message);
+  }
+
+  async saveResult() {
+    this.fileStore.setProjectId(this.selectedProjectId);
+    await this.fileService.saveResult();
+    this.fileStore.resetFileStore();
+    this.closeDialog(FrontendConstants.FileSaved);
+  }
+
+  async uploadFileToServer() {
+    if (!this.file || !this.selectedProjectId) {
+      return;
+    }
+
+    this.fileStore.setFileToUpload(this.file);
+    let response;
+    switch (this.actionType) {
+      case ActionType.Summarise:
+        response = await this.fileService.summariseDocument();
+        break;
+      case ActionType.KeySentences:
+        response = await this.fileService.getKeySentences();
+        break;
+      case ActionType.KeyPoints:
+        response = await this.fileService.getKeyPoints();
+        break;
+      case ActionType.Translate:
+        response = await this.fileService.translateDocument();
+        break;
+      default:
+        console.error('unknown action type');
+    }
+  }
+
+  get isUploadValid() {
+    return this.file !== null && this.selectedProjectId !== null;
+  }
+
+  onProjectChange(value: Select2UpdateValue) {
+    // @ts-ignore
+    this.selectedProjectId = value.value;
   }
 }

@@ -1,40 +1,43 @@
-import {Component} from '@angular/core';
-import {ActionType} from "./constants/FrontendConstants";
-import {FileService} from "../services/file.service";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActionType, DialogType, FrontendConstants} from "./constants/FrontendConstants";
+import {DocumentResultService} from "../services/document-result.service";
+import {Subscription} from "rxjs";
+import {DialogStore} from "../stores/dialog.store";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent {
-  fileUploadDialogHidden = true;
-  fileUploadDialogActionType: ActionType | undefined;
+export class DashboardComponent implements OnInit, OnDestroy {
+  protected dialogType: DialogType | null = null;
 
-  constructor(private fileService: FileService) {}
+  private dialogTypeSubscription: Subscription | undefined;
 
+  constructor(private documentResultService: DocumentResultService,
+              protected dialogStore: DialogStore) {}
+
+  ngOnInit(): void {
+    this.dialogTypeSubscription = this.dialogStore.getDialogTypeOpenAsObservable()
+      .subscribe((dialogType: DialogType | null) => {
+        this.dialogType = dialogType; // the switch statement in the HTML template will handle the rest
+      });
+  }
+
+  ngOnDestroy() {
+    this.dialogTypeSubscription?.unsubscribe();
+  }
+
+  // File upload
   handleFileUploadDialogOpen(actionType: ActionType) {
-    this.fileUploadDialogActionType = actionType;
-    this.fileUploadDialogHidden = false;
+    this.dialogStore.openFileUploadDialog(actionType);
   }
 
-  async uploadFileToServer() {
-    let response;
-    switch (this.fileUploadDialogActionType) {
-      case ActionType.Summarise:
-        response = await this.fileService.summariseDocument();
-        console.log(response);
-        break;
-      case ActionType.KeySentences:
-        response = await this.fileService.getKeySentences();
-        break;
-      case ActionType.KeyPoints:
-        response = await this.fileService.getKeyPoints();
-        break;
-      case ActionType.Translate:
-        response = await this.fileService.translateDocument();
-        break;
-      default:
-        console.error('unknown action type');
+  handleFileUploadDialogClosed(message: string) {
+    if (message === FrontendConstants.FileSaved) {
+      this.documentResultService.getRecentDocuments();
     }
+    this.dialogStore.closeFileUploadDialog();
   }
+
+  protected readonly DialogType = DialogType;
 }

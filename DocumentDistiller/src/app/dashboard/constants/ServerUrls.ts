@@ -14,4 +14,15 @@ export class DocumentActions {
   static readonly KEY_SENTENCES = this.baseUrl + '/keysentences';
   static readonly KEY_POINTS = this.baseUrl + '/keypoints';
   static readonly TRANSLATE = this.baseUrl + '/translate';
+  static readonly SAVE_RESULT = this.baseUrl + '/save-result';
+  static readonly RECENT = this.baseUrl + '/recent';
+  static readonly DELETE = this.baseUrl + '/delete/'; // requires documentGuid
+  static readonly EDIT = this.baseUrl + '/update/'; // requires documentGuid
+}
+
+export class ProjectActions {
+  private static baseUrl = environment.baseUrl + '/project';
+  static readonly CREATE = this.baseUrl + '/create';
+  static readonly BASE = this.baseUrl;
+  static readonly UPDATE = this.baseUrl + '/update/'; // requires documentGuid
 }

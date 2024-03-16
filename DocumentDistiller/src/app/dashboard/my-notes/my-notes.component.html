@@ -1,0 +1,19 @@
+<section class="flex flex-col col-span-2">
+  <div class="flex gap-3 items-center mb-3">
+    <i>
+      <!-- SVG icon for Latest Notes -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.75rem" height="1.75rem" viewBox="0 0 24 24">
+        <path fill="#c0c0c0"
+              d="M6 22q-.825 0-1.412-.587T4 20V4q0-.825.588-1.412T6 2h8l6 6v12q0 .825-.587 1.413T18 22zm7-13V4H6v16h12V9zM6 4v5zv16z"/>
+      </svg>
+    </i>
+    <h4 class="text-xl">Jump back in...</h4>
+  </div>
+  <div class="grid grid-cols-3 gap-5">
+    <!-- Note Cards -->
+    <app-note-card *ngFor="let document of documentResultStore.getLatestNotesValue()"
+                   [document]="document"
+                   class="h-full">
+    </app-note-card>
+  </div>
+</section>
