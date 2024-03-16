@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output} from "@angular/core";
-import {ControlValueAccessor} from "@angular/forms";
+import {ControlValueAccessor, FormControl, Validators} from "@angular/forms";
 import {ActionType, FrontendConstants} from "../../dashboard/constants/FrontendConstants";
 import {FileStore} from "../../stores/file.store";
 import {Subscription} from "rxjs";
@@ -53,6 +53,12 @@ import {ProjectStore} from "../../stores/project.store";
             </app-file-row>
           }
 
+          <!-- Note title -->
+          <input class="p-1 border-[1px] border-solid border-gray-300 rounded-lg focus:border-black focus:outline-none"
+                 type="text"
+                 placeholder="Note title"
+                 [formControl]="noteTitleFormControl">
+
           <!-- Project select -->
           <select2 class="p-1 border-[1px] border-solid border-gray-300 rounded-lg cursor-pointer"
                    [data]="selectOptions"
@@ -87,6 +93,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   actionType: ActionType | null;
   selectOptions: Select2Option[] = [];
   selectedProjectId: string | null = null;
+  noteTitleFormControl = new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]);
 
   onChange: Function = () => {
   };
@@ -157,6 +164,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
     }
 
     this.fileStore.setFileToUpload(this.file);
+    this.fileStore.setNoteTitle(this.noteTitleFormControl.value);
     let response;
     switch (this.actionType) {
       case ActionType.Summarise:
@@ -177,7 +185,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   }
 
   get isUploadValid() {
-    return this.file !== null && this.selectedProjectId !== null;
+    return this.file !== null && this.selectedProjectId !== null && this.noteTitleFormControl.valid;
   }
 
   onProjectChange(value: Select2UpdateValue) {

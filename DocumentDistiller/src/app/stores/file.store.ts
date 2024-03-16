@@ -7,6 +7,7 @@ import {DocumentResult} from "../models/document-result";
 })
 export class FileStore {
   fileToUpload: BehaviorSubject<File | null> = new BehaviorSubject<File | null>(null);
+  noteTitle: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   projectId: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   result: BehaviorSubject<DocumentResult | null> = new BehaviorSubject<DocumentResult | null>(null);
   isWaitingForResponse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -66,5 +67,13 @@ export class FileStore {
 
   getProjectId() {
     return this.projectId.value;
+  }
+
+  setNoteTitle(noteTitle: string | null) {
+    this.noteTitle.next(noteTitle);
+  }
+
+  getNoteTitle() {
+    return this.noteTitle.value;
   }
 }

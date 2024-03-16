@@ -5,8 +5,9 @@ using Azure.AI.Vision.ImageAnalysis;
 using Core.Configuration;
 using Core.Context;
 using Infrastructure;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 using Shared.Dtos;
 using Shared.Exceptions;
@@ -16,20 +17,12 @@ namespace Core.Services;
 
 public class DocumentService(TextAnalyticsClient client, DocumentRepository documentRepository, CurrentContext currentContext, IOptions<AzureAiSettings> aiSettings)
 {
-    public async Task<DocumentSummary> SummariseContent(string text, IFormFile file)
+    public async Task<DocumentSummary> SummariseContent(IFormFile file, string noteTitle)
     {
+        var batchInput = PrepareBatchInput(file);
+        var actions = new TextAnalyticsActions { AbstractiveSummarizeActions = new List<AbstractiveSummarizeAction> { new() } };
+        var operation = await StartAnalysisOperation(batchInput, actions);
         var summaryResult = new StringBuilder();
-        var batchInput = new List<string>
-        {
-            text
-        };
-        
-        var actions = new TextAnalyticsActions
-        {
-            AbstractiveSummarizeActions = new List<AbstractiveSummarizeAction> { new() }
-        };
-        
-        var operation = await client.StartAnalyzeActionsAsync(batchInput, actions);
         await operation.WaitForCompletionAsync();
         
         await foreach (var documentsInPage in operation.Value)
@@ -64,30 +57,21 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         {
             Id = Guid.NewGuid(),
             ProjectId = Guid.Empty,
-            Title = "Summary",
+            Title = noteTitle,
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
             FileName = file.FileName,
             Result = summaryResult.ToString()
         };
-
         return document;
     }
     
-    public async Task<DocumentKeySentences> ExtractKeySentences(string text, IFormFile file)
+    public async Task<DocumentKeySentences> ExtractKeySentences(IFormFile file, string noteTitle)
     {
+        var batchInput = PrepareBatchInput(file);
+        var actions = new TextAnalyticsActions { ExtractiveSummarizeActions = new List<ExtractiveSummarizeAction> { new() } };
+        var operation = await StartAnalysisOperation(batchInput, actions);
         var summaryResult = new StringBuilder();
-        var batchInput = new List<string>
-        {
-            text
-        };
-        
-        var actions = new TextAnalyticsActions
-        {
-            ExtractiveSummarizeActions = new List<ExtractiveSummarizeAction> { new() },
-        };
-        
-        var operation = await client.StartAnalyzeActionsAsync(batchInput, actions);
         await operation.WaitForCompletionAsync();
         
         await foreach (var documentsInPage in operation.Value)
@@ -121,7 +105,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         {
             Id = Guid.NewGuid(),
             ProjectId = Guid.Empty,
-            Title = "Key sentences",
+            Title = noteTitle,
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
             FileName = file.FileName,
@@ -182,7 +166,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         return await documentRepository.UpdateDocument(document);
     }
     
-    public async Task<DocumentResult> ImageToText(IFormFile file)
+    public async Task<DocumentResult> ImageToText(IFormFile file, string noteTitle)
     {
         var endpoint = aiSettings.Value.VISION_ENDPOINT;
         var key = aiSettings.Value.VISION_KEY;
@@ -212,7 +196,7 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         {
             Id = Guid.NewGuid(),
             ProjectId = Guid.Empty,
-            Title = "Image to text",
+            Title = noteTitle,
             CreatedAt = DateTime.Now.ToUniversalTime(),
             LastModifiedAt = DateTime.Now.ToUniversalTime(),
             FileName = file.FileName,
@@ -227,5 +211,39 @@ public class DocumentService(TextAnalyticsClient client, DocumentRepository docu
         Console.WriteLine("  Error!");
         Console.WriteLine($"  {type} error code: {error.ErrorCode}.");
         Console.WriteLine($"  Message: {error.Message}");
+    }
+    
+    private void HandleDocumentAction(IFormFile file, string type, string fileName)
+    {
+        var text = ConvertPdfToString(file);
+    }
+    
+    private string ConvertPdfToString(IFormFile file)
+    {
+        var reader = new PdfReader(file.OpenReadStream());
+        var pdfDocument = new PdfDocument(reader);
+        var stringBuilder = new StringBuilder();
+        for (int page = 1; page <= pdfDocument.GetNumberOfPages(); page++)
+        {
+            var text = PdfTextExtractor.GetTextFromPage(pdfDocument.GetPage(page));
+            stringBuilder.Append(text);
+        }
+        reader.Close();
+        pdfDocument.Close();
+        return stringBuilder.ToString();
+    }
+    
+    private async Task<AnalyzeActionsOperation> StartAnalysisOperation(List<string> batchInput, TextAnalyticsActions actions)
+    {
+        var operation = await client.StartAnalyzeActionsAsync(batchInput, actions);
+        await operation.WaitForCompletionAsync();
+        return operation;
+    }
+    
+    private List<string> PrepareBatchInput(IFormFile file)
+    {
+        var text = ConvertPdfToString(file);
+        var batchInput = new List<string> { text };
+        return batchInput;
     }
 }

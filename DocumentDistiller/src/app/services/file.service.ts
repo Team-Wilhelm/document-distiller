@@ -42,7 +42,8 @@ export class FileService {
       const file =  this.fileStore.getFileToUploadValue()!;
       const formData = new FormData();
       formData.append('file', file);
-      const response = await firstValueFrom(this.httpClient.post<DocumentResult>(url, formData));
+      const noteTitle = this.fileStore.getNoteTitle();
+      const response = await firstValueFrom(this.httpClient.post<DocumentResult>(url + `?noteTitle=${noteTitle}`, formData));
       this.fileStore.setIsWaitingForResponse(false);
       this.fileStore.setResult(response);
       return response;
