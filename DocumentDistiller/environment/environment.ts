@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  baseUrl: 'https://document-distiller.azurewebsites.net',
+  baseUrl: 'http://localhost:5069',
 };
