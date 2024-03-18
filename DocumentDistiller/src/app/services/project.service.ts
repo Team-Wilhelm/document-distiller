@@ -8,7 +8,6 @@ import {ProjectStore} from "../stores/project.store";
 @Injectable()
 export class ProjectService {
   constructor(private httpClient: HttpClient, private projectStore: ProjectStore) {
-    this.getAllProjects().then();
   }
 
   async getAllProjects() {

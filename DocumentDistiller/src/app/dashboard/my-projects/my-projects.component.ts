@@ -8,7 +8,7 @@ import {ProjectStore} from "../../stores/project.store";
 })
 export class MyProjectsComponent {
 
-  constructor(protected projectStore: ProjectStore){
-
+  constructor(protected projectStore: ProjectStore, private projectService: ProjectService) {
+    this.projectService.getAllProjects();
   }
 }

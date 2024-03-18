@@ -22,7 +22,6 @@ export class AppComponent implements OnInit, OnDestroy {
               protected projectStore: ProjectStore,
               private projectService: ProjectService,
               private dialogStore: DialogStore) {
-    this.projectService.getAllProjects();
   }
 
   ngOnInit() {
