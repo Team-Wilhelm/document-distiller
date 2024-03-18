@@ -197,7 +197,11 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   }
 
   get isUploadValid() {
-    return this.file !== null && this.selectedProjectId !== null && this.noteTitleFormControl.valid && this.targetLanguage !== null;
+    let defaultValid = this.file !== null && this.selectedProjectId !== null && this.noteTitleFormControl.valid;
+    if (this.actionType === ActionType.Translate) {
+      defaultValid = defaultValid && this.targetLanguage !== null;
+    }
+    return defaultValid;
   }
 
   onProjectChange(value: Select2UpdateValue) {
