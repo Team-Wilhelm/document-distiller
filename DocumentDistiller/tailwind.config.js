@@ -18,6 +18,9 @@ module.exports = {
         'screen-no-sidebar': 'calc(100vw - 230px)',
         'sidebar': '230px',
       },
+      maxWidth: {
+        'screen-no-sidebar': 'calc(100vw - 230px)',
+      },
       margin: {
         'sidebar': '230px',
       },

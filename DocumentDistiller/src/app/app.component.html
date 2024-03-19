@@ -45,7 +45,7 @@
   </nav>
 
   <!-- Content -->
-  <div class="flex flex-col items-center bg-background-sidebar"
+  <div class="flex flex-col items-center bg-background-sidebar max-w-screen-no-sidebar overflow-x-hidden"
        [ngClass]="!tokenService.isAuthenticated() ? 'ml-0' : 'ml-sidebar'">
     <router-outlet></router-outlet>
   </div>
