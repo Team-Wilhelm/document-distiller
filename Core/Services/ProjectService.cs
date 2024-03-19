@@ -15,7 +15,8 @@ public class ProjectService(ProjectRepository projectRepository, CurrentContext 
             Id = Guid.NewGuid(),
             Name = project.Name,
             Description = project.Description,
-            OwnerId = currentContext.UserId!.Value
+            OwnerId = currentContext.UserId!.Value,
+            CreatedAt = DateTime.Now.ToUniversalTime(),
         };
         
         return await projectRepository.CreateProject(newProject);
