@@ -11,16 +11,18 @@ import {ProjectStore} from "../../stores/project.store";
 @Component({
   selector: 'app-file-upload-dialog',
   template: `
-    <app-dialog [title]="''" [minWidth]="'50vw'" [maxWidth]="'50vw'" (closeDialogEmitter)="closeDialogEmitter.emit()">
+    <app-dialog [title]="''" [minWidth]="'50vw'" [maxWidth]="'50vh'" (closeDialogEmitter)="closeDialogEmitter.emit()">
       <section class="flex flex-col gap-3 w-full">
         <h4 class="text-2xl">Upload and attach files</h4>
         <p class="text-xl text-gray-500">Upload and attach files to {{ actionType?.toLowerCase() }}</p>
         @if (isWaitingForResponse) {
           <p>I am loading jesus christ give me some time</p>
         } @else if (fileStore.getResultValue()) {
-          @for (sentence of getSentencesToDisplay(); track sentence) {
-            <p>{{ sentence }}</p>
-          }
+          <div class="max-h-[30vh] overflow-y-auto">
+            @for (sentence of getSentencesToDisplay(); track sentence) {
+              <p>{{ sentence }}</p>
+            }
+          </div>
           <div class="flex gap-2">
             <button class="p-3 flex-grow text-black rounded-lg border-solid border-gray-300 border-[1px]"
                     (click)="closeDialog()">Cancel
