@@ -196,7 +196,7 @@ if (args.Contains("--db-init"))
 {
     var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.ExecuteSql($"CREATE SCHEMA IF NOT EXISTS public;");
+    // db.Database.ExecuteSql($"CREATE SCHEMA IF NOT EXISTS public;");
     db.Database.EnsureCreated();
     db.Database.Migrate();
 
