@@ -171,7 +171,7 @@ export class FileUploadDialogComponent implements ControlValueAccessor, OnDestro
   }
 
   async uploadFileToServer() {
-    if (!this.file || !this.selectedProjectId || !this.noteTitleFormControl.valid || !this.targetLanguage) {
+    if (!this.file || !this.selectedProjectId || !this.noteTitleFormControl.valid || (!this.targetLanguage && this.actionType === ActionType.Translate)) {
       return;
     }
 
