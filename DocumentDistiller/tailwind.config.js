@@ -15,14 +15,14 @@ module.exports = {
         'dashboard': 'auto auto auto',
       },
       width: {
-        'screen-no-sidebar': 'calc(100vw - 230px)',
-        'sidebar': '230px',
+        'screen-no-sidebar': 'calc(100vw - 250px)',
+        'sidebar': '250px',
       },
       maxWidth: {
-        'screen-no-sidebar': 'calc(100vw - 230px)',
+        'screen-no-sidebar': 'calc(100vw - 250px)',
       },
       margin: {
-        'sidebar': '230px',
+        'sidebar': '250px',
       },
       colors : {
         'background': '#F7F6F3',
